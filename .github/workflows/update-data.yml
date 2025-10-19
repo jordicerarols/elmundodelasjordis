@@ -1,4 +1,4 @@
-name: Update data indices (nightly)
+name: oniric nightly
 
 on:
   schedule:
