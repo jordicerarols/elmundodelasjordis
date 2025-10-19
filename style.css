@@ -1,0 +1,683 @@
+/* ============================== 8) PAGES — Pensamientos (viewer) ======== */
+/* Reutiliza layout de extras: body.page-pensamientos usa mismos pads/scroll */
+body.page-pensamientos {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 87dvh;
+}
+
+.page-pensamientos .pens-main {
+  padding: var(--nav-offset);
+  padding-top: 0;
+  overflow: auto;
+  min-height: 0;
+  max-height: 72dvh;
+}
+
+@media (min-width: 800px) and (max-width: 999px) {
+  .page-pensamientos .pens-main { max-height: 55dvh; }
+}
+@media (min-width: 1000px) {
+  .page-pensamientos .pens-main { max-height: 50dvh; }
+}
+
+/* Estructura de mes/día */
+.pens-mes {
+  margin: clamp(16px, 3vw, 36px) 0;
+}
+.pens-mes h2 {
+  margin: 0 0 0.6em 0;
+  font-weight: 400;
+  font-size: clamp(28px, 3.4vw, 42px);
+  font-family: "Island Moments", cursive;
+  line-height: 0.9;
+}
+
+.pens-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(8px, 2vw, 16px);
+  align-items: baseline;
+  margin-bottom: clamp(10px, 2vw, 18px);
+}
+
+.pens-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.6s ease-in-out;
+  white-space: nowrap;
+}
+
+.pens-link:hover,
+.pens-link:focus-visible {
+  color: #999;
+  animation: blinkSoft 1.4s ease-in-out infinite alternate;
+  outline: none;
+}
+/*
+=============================================================================
+JORDIS — style.css
+Table of contents (sections use the same headers):
+  1) GLOBAL TOKENS (colors, type scales, layout vars)
+  2) RESETS / BASE (box-sizing, html/body)
+  3) BASE TYPOGRAPHY (headings, links)
+  4) COMPONENTS (navigation, menu, buttons)
+  5) TEXT & PLACEHOLDERS (p, .ph, #editor, toolbars)
+  6) UTILITIES (a11y helpers)
+  7) ANIMATIONS
+  8) PAGES
+     8.1) Editor de diario (escribir)
+     8.2) Diario (viewer)
+     8.3) Libros (viewer)
+     8.4) Extras (viewer)
+     8.5) Capítulo (viewer)
+=============================================================================
+*/
+/* ============================== 1) GLOBAL TOKENS ========================= */
+:root {
+  /* Colors */
+  --color-text: #333;
+  --color-bg: #fff;
+
+  /* Typography sizes */
+  --h1-size: clamp(40px, 12vw, 200px);
+  --p-size: clamp(16px, 1.25vw, 20px);
+  --nav-size: clamp(18px, 2.8vw, 28px);
+
+  /* H1 layout */
+  --h1-gap-x: clamp(40px, 8vw, 140px);
+  --h1-gap-y: clamp(28px, 6vw, 88px);
+  --h1-hanging-indent: 3.5ch;
+  --h1-max-desktop: 28ch;
+  --h1-max-mobile: 20ch;
+
+  /* Nav/menu layout */
+  --nav-offset: clamp(28px, 5vw, 80px);
+  --nav-gap: clamp(18px, 3vw, 44px);
+  --nav-gap-scale: 1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* ============================== 2) RESETS / BASE ========================= */
+body {
+  font-family: "EB Garamond", serif;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: 100svh;
+  font-feature-settings: "kern" 1, "liga" 1, "clig" 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ============================== 3) BASE TYPOGRAPHY ======================= */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Island Moments", cursive;
+  font-weight: 400;
+  line-height: 0.9;
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--h1-size);
+  margin: var(--h1-gap-y) 0 0 var(--h1-gap-x);
+  max-width: var(--h1-max-desktop);
+}
+
+h2 {
+  font-size: clamp(36px, 10vw, 160px);
+  margin: var(--h1-gap-y) 0 0 0;
+  max-width: var(--h1-max-desktop);
+}
+
+/* ------------------------------------------------------------------------- */
+
+.home h1 {
+  padding-left: var(--h1-hanging-indent);
+  text-indent: calc(-1 * var(--h1-hanging-indent));
+}
+
+/* Enlaces del h1 */
+.h1-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.6s ease-in-out;
+}
+
+.h1-link:hover,
+.h1-link:focus-visible {
+  color: #999;
+  animation: blinkSoft 1.4s ease-in-out infinite alternate;
+  outline: none;
+}
+
+/* ============================== 4) COMPONENTS: NAV & MENU ================ */
+.nav-right {
+  position: fixed;
+  right: var(--nav-offset);
+  bottom: calc(var(--nav-offset) / 2);
+  display: flex;
+  gap: calc(var(--nav-gap) * var(--nav-gap-scale));
+  align-items: flex-end;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  font-family: "Island Moments", cursive;
+  font-size: var(--nav-size);
+}
+
+.nav-left {
+  position: fixed;
+  left: var(--nav-offset);
+  bottom: calc(var(--nav-offset) / 2);
+  display: flex;
+  gap: calc(var(--nav-gap) * var(--nav-gap-scale));
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  font-family: "Island Moments", cursive;
+  font-size: var(--nav-size);
+}
+
+/* Page-specific: las jordis — right nav in column */
+.page-lasjordis .nav-right {
+  flex-direction: column;
+  align-items: flex-start;
+    gap: calc(var(--nav-gap) * var(--nav-gap-scale)/4);
+}
+
+.menu a {
+  color: inherit;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.6s ease-in-out;
+}
+
+/* ------------------------------------------------------------------------- */
+
+.menu a:hover,
+.menu a:focus-visible {
+  color: #999; /* gris clarito */
+  animation: blinkSoft 1.4s ease-in-out infinite alternate;
+  outline: none;
+}
+
+/* ============================== COMPONENTS: BUTTONS ====================== */
+/* Botones tipo navegación (editor) */
+.nav-btn {
+  font-family: "Island Moments", cursive;
+  font-size: var(--nav-size);
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.6s ease-in-out;
+  cursor: pointer;
+}
+
+.nav-btn:hover,
+.nav-btn:focus-visible {
+  color: #999;
+  animation: blinkSoft 1.4s ease-in-out infinite alternate;
+  outline: none;
+}
+
+/* ============================== 5) TEXT & PLACEHOLDERS =================== */
+p {
+  font-size: var(--p-size);
+  max-width: 60ch;
+  margin: var(--h1-gap-y) var(--h1-gap-x);
+}
+
+u {
+  text-underline-offset: 0.15em;
+}
+
+/* --- Placeholders --- */
+.ph:empty::before {
+  content: attr(data-placeholder);
+  opacity: 0.5;
+}
+.ph:not(:empty) {
+  min-width: 0;
+}
+
+#lugar.ph[contenteditable="true"] {
+  cursor: text;
+}
+
+#fecha.ph {
+  cursor: pointer;
+}
+/* Cualquier placeholder con role=button debe mostrar cursor de botón */
+.ph[role="button"] {
+  cursor: pointer;
+}
+
+.box {
+  width: min(80vw, 720px);
+  height: min(50vh, 420px);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 4vw, 48px);
+}
+
+#editor {
+  width: 100%;
+  height: 100%;
+  outline: none;
+  background: transparent;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell,
+    "Noto Sans", Arial, sans-serif;
+  font-size: clamp(16px, 1.25vw, 20px);
+  line-height: 1.4;
+  overflow: auto;
+}
+
+#editor:empty::before {
+  content: "(texto)";
+  color: #fff;
+  font-style: normal;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell,
+    "Noto Sans", Arial, sans-serif;
+}
+
+/* ------------------------------------------------------------------------- */
+
+.toolbar {
+  display: flex;
+  gap: min(3vw, 32px);
+  width: min(80vw, 720px);
+  justify-content: center;
+  font-family: "Island Moments", cursive;
+  font-size: clamp(20px, 2.2vw, 32px);
+  margin-bottom: 10vh;
+}
+
+.tool {
+  cursor: pointer;
+  user-select: none;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.tool:focus-visible {
+  outline: 1px dashed #999;
+}
+
+.actions {
+  width: min(80vw, 720px);
+  display: flex;
+  justify-content: flex-end;
+  margin: 6vh auto 8vh;
+  font-family: "Island Moments", cursive;
+  font-size: clamp(28px, 5vw, 64px);
+}
+
+.actions a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* --- Paleta de colores (texto destacado) --- */
+.c-amarillo {
+  color: #f7c873;
+}
+
+.c-verde {
+  color: #3a7f4f;
+}
+
+.c-azul {
+  color: #2f5aa6;
+}
+
+.c-rosa {
+  color: #db5ca0;
+}
+
+/* --- Responsive tweaks (global) --- */
+@media (max-width: 640px) {
+  :root {
+    --h1-size: clamp(64px, 18vw, 150px);
+    --p-size: clamp(18px, 4.5vw, 22px);
+    --nav-size: clamp(22px, 6.5vw, 36px);
+
+    --h1-gap-x: clamp(28px, 9vw, 64px);
+    --h1-gap-y: clamp(40px, 12vw, 72px);
+
+    --nav-offset: clamp(14px, 5vw, 24px);
+    --nav-gap: clamp(6px, 3.5vw, 14px);
+    --nav-gap-scale: 0; /* gap efectivo = 0 */
+  }
+
+  h1 {
+    max-width: var(--h1-max-mobile);
+  }
+
+  .menu {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .menu a {
+    padding: 8px 4px;
+    line-height: 1.15;
+  }
+
+  .toolbar,
+  .actions,
+  .box {
+    width: 92vw;
+  }
+}
+
+/* ============================== 6) UTILITIES ============================= */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================== 7) ANIMATIONS ============================ */
+@keyframes blinkSoft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* ============================== 8) PAGES — 8.1 Editor de diario ========= */
+/* Centrar h2 en página escribir */
+.page-escribir h2 {
+  text-align: center;
+}
+
+.editor {
+  display: grid;
+  place-items: center;
+  gap: 4vh;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column; /* contenedor en columna para filas */
+  justify-content: center;
+  align-items: center;
+}
+
+/* Agrupar filas en la barra meta (capítulos/diario) */
+.meta-row {
+  display: flex;
+  flex-direction: row; /* asegurar fila */
+  gap: min(8vw, 80px);
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+}
+.meta-row .ph {
+  min-width: 6ch;
+}
+
+/* Cada item de la meta ocupa solo su contenido */
+.meta > * {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+/* La hora no fuerza ancho mínimo */
+#hora {
+  min-width: 0;
+}
+
+.ph {
+  font-family: "Island Moments", cursive;
+  font-size: clamp(28px, 6vw, 64px);
+  color: #000;
+  opacity: 0.9;
+  cursor: text;
+  outline: none;
+  user-select: text;
+  min-width: 6ch;
+  text-align: center;
+}
+
+/* ============================== 8) PAGES — 8.2 Diario (viewer) ========== */
+
+/* ------------------------------------------------------------------------- */
+
+.diario-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* gap: clamp(12px, 4vw, 48px); */
+  align-items: start;
+  min-height: 100dvh;
+}
+
+.diario-left {
+  padding: clamp(8px, 2vw, 16px);
+}
+
+.diario-right {
+  padding: var(--nav-offset);
+}
+
+.diario-entrada {
+  margin: clamp(16px, 3vw, 36px) 0;
+}
+
+.diario-entrada h3 {
+  margin: 0 0 0.6em 0;
+  font-weight: 400;
+  font-size: clamp(28px, 3.4vw, 42px);
+}
+
+/* Diario: en desktop solo hace scroll la columna derecha */
+@media (min-width: 641px) {
+  .diario-grid {
+    grid-template-columns: 45% 55%;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .diario-left {
+    overflow: hidden;
+  }
+  .diario-right {
+    max-height: 100dvh;
+    overflow: auto;
+    padding-bottom: 0;
+  }
+}
+
+/* Diario: responsive hasta 480px. Top 20dvh (título), lista 70dvh (scroll),
+   queda ~10dvh libre para el botón fijo sin solapar. */
+@media (max-width: 640px) {
+  .diario-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 25dvh 62dvh; /* 20% arriba, 70% lista */
+    height: 100dvh; /* reserva el 10% restante */
+  }
+  .diario-left {
+    min-height: 25dvh;
+    overflow: hidden;
+  }
+  .diario-right {
+    max-height: 62dvh;
+    overflow: auto; /* scroll interno para las entradas */
+    padding-bottom: 0; /* ya reservamos hueco con el 10% libre */
+  }
+  .diario-entrada {
+    margin: clamp(20px, 5vw, 44px) 0;
+  }
+}
+
+/* ============================== 8) PAGES — 8.3 Libros (viewer) ========= */
+
+/* ------------------------------------------------------------------------- */
+
+.libros-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.libros-list li {
+  margin: clamp(16px, 3vw, 36px) 0;
+}
+.libros-list h3 {
+  margin: 0;
+  font-weight: 400;
+  font-size: clamp(28px, 3.4vw, 42px);
+}
+.libros-list a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.6s ease-in-out;
+}
+.libros-list a:hover,
+.libros-list a:focus-visible {
+  color: #999;
+  animation: blinkSoft 1.4s ease-in-out infinite alternate;
+  outline: none;
+}
+
+@media (max-width: 480px) {
+  .libros-list li {
+    margin: clamp(20px, 5vw, 44px) 0;
+  }
+}
+
+/* ============================== 8) PAGES — 8.4 Extras (viewer) ========= */
+/* El <body> cuando está en page-extras actúa como contenedor grid propio
+   (independiente del grid global), con dos filas: título (auto) + contenido (1fr).
+   La altura total del contenedor se fija en 87dvh para reservar 13dvh libres
+   de forma constante en cualquier viewport. */
+body.page-extras {
+  display: grid; /* forzamos grid local */
+  grid-template-rows: auto 1fr; /* fila 1 = h1, fila 2 = contenido scrolleable */
+  min-height: 87dvh; /* siempre deja 13dvh libre para la nav fija */
+}
+
+/* Contenido de extras */
+.page-extras .extras-main {
+  padding: var(--nav-offset);
+  padding-top: 0; /* sin padding arriba, como pides */
+  overflow: auto; /* scroll interno si crece */
+  min-height: 0; /* permite que el grid-item en 1fr pueda encoger */
+  max-height: 72dvh;
+}
+
+@media (min-width: 800px) and (max-width: 999px) {
+  .page-extras .extras-main {
+    max-height: 55dvh;
+  }
+}
+
+@media (min-width: 1000px) {
+  .page-extras .extras-main {
+    max-height: 50dvh;
+  }
+}
+
+/* @media (min-width: 1200px) and (max-width: 1399px) {
+  .page-extras .extras-main {
+    max-height: 50dvh;
+  }
+}
+
+@media (min-width: 1000px) and (max-width: 1199px) {
+  .page-extras .extras-main {
+    max-height: 55dvh;
+  }
+}
+
+@media (min-width: 800px) and (max-width: 999px) {
+  .page-extras .extras-main {
+    max-height: 60dvh;
+  }
+} */
+
+.page-extras .extras-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.page-extras .extras-item {
+  margin: clamp(16px, 3vw, 36px) 0;
+}
+.page-extras .extras-item h3 {
+  margin: 0 0 0.6em 0;
+  font-weight: 400;
+  font-size: clamp(28px, 3.4vw, 42px);
+}
+
+.page-extras .extras-item h4 {
+  margin: 0 0 0.3em 0;
+  font-weight: 400;
+  font-size: clamp(22px, 2.6vw, 32px);
+  opacity: 0.9;
+}
+
+/* ============================== 8) PAGES — 8.5 Capítulo (viewer) ======== */
+/* Capítulo — título principal */
+.page-capitulo h1 {
+  /* usa el h1 estándar de la web, solo añadimos un respiro inferior */
+  padding-bottom: calc(var(--h1-gap-y) * 0.5);
+}
+
+.page-capitulo .meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-capitulo .capitulo-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(12px, 2vw, 24px);
+  padding: clamp(16px, 4vw, 48px);
+}
+
+.page-capitulo .cap-body {
+  width: min(92vw, 76ch);
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Capítulo — tipografía del contenido */
+.page-capitulo .cap-body h3 {
+  margin: 0 0 0.6em 0;
+  font-weight: 400;
+  font-size: clamp(28px, 3.4vw, 42px); /* igual que en listado de libros */
+}
+
+/* Capítulo: ocultar fecha visual */
+.page-capitulo #capFecha {
+  display: none;
+}

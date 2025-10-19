@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "scripts": {
+    "build:indices": "node scripts/build-indices.js"
+  }
+}

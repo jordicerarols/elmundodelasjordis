@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang='es'>
+
+<head>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Island+Moments&family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+    <title>capítulo</title>
+    <link rel='stylesheet' href='../style.css'>
+</head>
+
+<body class="page-escribir" data-editor="capitulos">
+    <main class='editor'>
+        <h2>escribir capítulo</h2>
+        <div class='meta'>
+          <div class="meta-row">
+            <span id="titulo"   class="ph" contenteditable="true" data-placeholder="título"></span>
+            <span id="capitulo" class="ph" contenteditable="true" data-placeholder="capítulo"></span>
+          </div>
+          <div class="meta-row">
+            <span id="libro"    class="ph" contenteditable="true" data-placeholder="libro"></span>
+            <span id="fecha"    class="ph" contenteditable="true" data-placeholder="fecha" title="Click para elegir fecha"></span>
+            <span id="hora"     class="ph" data-placeholder="hora" title="Click para elegir hora"></span>
+          </div>
+        </div>
+        <input type="date" id="fechaPicker" class="visualmente-hidden visually-hidden" aria-hidden="true" tabindex="-1" />
+        <input type="time" id="horaPicker"  class="visualmente-hidden visually-hidden" aria-hidden="true" tabindex="-1" step="60" />
+        <div class='box'>
+            <div id='editor' contenteditable='true'></div>
+        </div>
+        <div class='toolbar' aria-label='Formato (capítulos)'>
+            <button class='nav-btn' data-action='link'>link</button>
+            <button class='nav-btn' data-tag='em'>cursiva</button>
+        </div>
+        <div class='actions'><a href='#' id='download'>descargar</a></div>
+    </main>
+    <script src="../js/editor-core.js"></script>
+    <script>
+      (function(){
+        SimpleEditor.init({
+          root: document,
+          editor: '#editor',
+          toolbarBtnSel: '.toolbar .nav-btn',
+          downloadBtn: '#download',
+          fields: {
+            titulo:   { default: '' },
+            capitulo: { default: '' },
+            libro:    { default: '' },
+            fecha:    { picker: 'date', inputId: 'fechaPicker' },
+            hora:     { picker: 'time', inputId: 'horaPicker' }
+          }
+        });
+      })();
+    </script>
+</body>
+
+</html>

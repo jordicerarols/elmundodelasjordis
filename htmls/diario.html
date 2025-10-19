@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>diario</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Island+Moments&family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../style.css" />
+
+</head>
+
+<body>
+  <main class="diario-grid">
+    <div class="diario-left">
+      <h1>diario</h1>
+      <nav class="menu nav-left" aria-label="Secciones">
+        <a href="../index.html">casa</a>
+      </nav>
+    </div>
+    <div id="diario-col" class="diario-right"></div>
+  </main>
+
+  <script src="../js/lector-core.js"></script>
+  <script>
+    VisualizadorCore.init({
+      categoria: 'diario',
+      containerSel: '#diario-col',
+      emptyText: 'Sin entradas de diario todavía.'
+    });
+  </script>
+</body>
+
+</html>

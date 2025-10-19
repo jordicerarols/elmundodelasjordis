@@ -1,0 +1,32 @@
+[
+  {
+    "path": "data/libros/libro_1UNO_2025-11-04-21-16.html",
+    "date": "2025-11-04",
+    "time": "21:16:00",
+    "libro": "libro",
+    "capitulo": "1UNO",
+    "titulo": "titulo",
+    "prev": "",
+    "next": ""
+  },
+  {
+    "path": "data/libros/funcionaria_2_2025-11-04-21-16.html",
+    "date": "2025-11-04",
+    "time": "21:16:00",
+    "libro": "funcionaria",
+    "capitulo": "2",
+    "titulo": "titulo",
+    "prev": "",
+    "next": "data/libros/funcionaria_1_2025-10-16-19-24.html"
+  },
+  {
+    "path": "data/libros/funcionaria_1_2025-10-16-19-24.html",
+    "date": "2025-10-16",
+    "time": "19:24:00",
+    "libro": "funcionaria",
+    "capitulo": "1",
+    "titulo": "un dia en la playa",
+    "prev": "data/libros/funcionaria_2_2025-11-04-21-16.html",
+    "next": ""
+  }
+]

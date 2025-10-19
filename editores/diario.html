@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang='es'>
+
+<head>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>escribir</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Island+Moments&family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel='stylesheet' href='../style.css'>
+</head>
+
+<body class="page-escribir" data-editor="diario">
+    <main class='editor'>
+        <h2>escribir diario</h2>
+        <div class='meta'>
+        <div class='meta-row'>
+            <span id="lugar" class="ph" contenteditable="true" data-placeholder="lugar" title="escribe el lugar"></span>
+            <span id="fecha" class="ph" contenteditable="true" data-placeholder="fecha" title="Click para elegir fecha"></span>
+            <span id="hora" class="ph" data-placeholder="hora" title="se fija al descargar"></span>
+        </div>
+        <input type="date" id="fechaPicker" class="visually-hidden" aria-hidden="true" tabindex="-1" />
+        <input type="time" id="horaPicker" class="visually-hidden" aria-hidden="true" tabindex="-1" step="60" />
+        <div class='box'>
+            <div id='editor' contenteditable='true'></div>
+        </div>
+        <div class='toolbar' aria-label='Formato (simple)'>
+            <button class='nav-btn' data-tag='u'>subrayar</button>
+            <button class='nav-btn' data-tag='strong'>negrita</button>
+            <button class='nav-btn' data-tag='em'>cursiva</button>
+            <button class='nav-btn' data-color='amarillo'>amarillo</button>
+            <button class='nav-btn' data-color='verde'>verde</button>
+            <button class='nav-btn' data-color='azul'>azul</button>
+            <button class='nav-btn' data-color='rosa'>rosa</button>
+        </div>
+        <div class='actions'><a href='#' id='download'>descargar</a></div>
+    </main>
+    <script src="../js/editor-core.js"></script>
+    <script>
+      (function(){
+        const $ = sel => document.querySelector(sel);
+        function filenameFn(){
+          const fecha = ($('#fecha')?.textContent || '').trim();
+          const hora  = ($('#hora')?.textContent  || '').trim();
+          const [hh='00', mm='00'] = (hora.includes(':') ? hora.split(':') : ['00','00']);
+          const lugar = (($('#lugar')?.textContent || 'sin-lugar').trim()).replace(/\s+/g,'_');
+          return `${fecha}_${hh}-${mm}_${lugar}.html`;
+        }
+        SimpleEditor.init({
+          root: document,
+          editor: '#editor',
+          toolbarBtnSel: '.toolbar .nav-btn',
+          downloadBtn: '#download',
+          filenameFn,
+          fields: {
+            lugar: { default: 'barcelona' },
+            fecha: { picker: 'date', inputId: 'fechaPicker' },
+            hora:  { picker: 'time', inputId: 'horaPicker' }
+          }
+        });
+      })();
+    </script>
+</body>
+
+</html>
