@@ -1,0 +1,57 @@
+name: Update data indices (nightly)
+
+on:
+  schedule:
+    - cron: "0 23 * * *"  # 23:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install (optional)
+        run: |
+          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+            echo "Lockfile found → running npm ci"
+            npm ci --no-audit --no-fund
+          elif [ -f package.json ]; then
+            echo "No lockfile → running npm install"
+            npm install --no-audit --no-fund
+          else
+            echo "No package.json → skipping install"
+          fi
+
+      - name: Build indices
+        run: |
+          if [ -f js/build-indices.js ]; then
+            echo "Running js/build-indices.js"
+            node js/build-indices.js
+          elif npm run | grep -qE '^  build:indices'; then
+            echo "Running npm run build:indices"
+            npm run build:indices
+          else
+            echo "No build script found."
+          fi
+
+      - name: Commit & push if changed
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore(data): nightly indices update"
+            git push
+          else
+            echo "No changes."
+          fi
