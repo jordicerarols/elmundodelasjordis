@@ -1,0 +1,18 @@
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon files on custom volumes
+Icon?
+
+# Thumbnails
+._*
+
+# Files that may appear on external disks
+.Spotlight-V100
+.Trashes
+
+# macOS specific metadata
+ehthumbs.db
+Thumbs.db
