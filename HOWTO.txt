@@ -9,3 +9,4 @@
     cierro pestaña COMMIT_MSG
 - tercer botón de la izquierda, sync changes (flechita hacia arriba)
 - esperar hasta la noche para oniric nightly (se actualiza por la noche)
+- asegurarme de que no hay ninguna bolita en el tercer botón
