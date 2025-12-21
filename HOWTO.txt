@@ -1,0 +1,11 @@
+- tercer botón de la izquierda, sync changes (flechita hacia abajo)
+- generar contenido (diario, pensamiento, capítulo, extra)
+- colocar el contenido en la carpeta adecuada
+- tercer botón de la izquierda, commit 
+- rellenar el commit message 
+    al darle clic al botón de commit se abre una pestaña que se llama COMMIT_MSG
+    en la primera línea del todo escribo lo que quiero
+    guardo el mensaje: "cmd + s" o file + save
+    cierro pestaña COMMIT_MSG
+- tercer botón de la izquierda, sync changes (flechita hacia arriba)
+- esperar hasta la noche para oniric nightly (se actualiza por la noche)
