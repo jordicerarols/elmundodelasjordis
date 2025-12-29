@@ -323,8 +323,20 @@ function extractContentFromHTML(html){
         path: it.path || it.file || it.href || ''
       }));
 
-      // Orden: más nuevo primero. Si vienen con YYYY-MM-DD__HH-mm-ss en el nombre, basta con ordenar por path desc
-      items.sort((a, b) => (a.path < b.path ? 1 : -1));
+      // Orden: más nuevo primero. Preferir date/time si existe; si no, usar path.
+      const sortKey = (it) => {
+        if (it.date) {
+          const t = (it.time || '00:00:00').replace(/:/g, '-');
+          return `${it.date}__${t}`;
+        }
+        return it.path || '';
+      };
+      items.sort((a, b) => {
+        const aKey = sortKey(a);
+        const bKey = sortKey(b);
+        if (aKey === bKey) return 0;
+        return aKey < bKey ? 1 : -1;
+      });
 
       // Pensamientos: render agrupado por mes y día, con enlaces que reproducen audio
       if (categoria === 'pensamientos' && !renderItem) {
