@@ -1,5 +1,11 @@
 [
   {
+    "path": "data/diario/2026-01-13_21-47_barcelona.html",
+    "date": "2026-01-13",
+    "time": "21:47:00",
+    "place": "barcelona"
+  },
+  {
     "path": "data/diario/2025-12-24_17-43_barcelona.html",
     "date": "2025-12-24",
     "time": "17:43:00",
