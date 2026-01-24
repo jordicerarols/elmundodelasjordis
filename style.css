@@ -6,9 +6,15 @@ body.page-pensamientos {
   min-height: 87dvh;
 }
 
+/* Pensamientos: título un poco más pequeño */
+body.page-pensamientos h1 {
+  font-size: clamp(32px, 9vw, 160px);
+}
+
 .page-pensamientos .pens-main {
   padding: var(--nav-offset);
-  padding-top: 0;
+  padding-top: 20dvh;
+  padding-bottom: 20dvh;
   overflow: auto;
   min-height: 0;
   max-height: 72dvh;
@@ -486,6 +492,8 @@ u {
 
 .diario-right {
   padding: var(--nav-offset);
+  padding-top: 20dvh;
+  padding-bottom: 20dvh;
 }
 
 .diario-entrada {
@@ -511,7 +519,7 @@ u {
   .diario-right {
     max-height: 100dvh;
     overflow: auto;
-    padding-bottom: 0;
+    padding-bottom: 20dvh;
   }
 }
 
@@ -530,7 +538,7 @@ u {
   .diario-right {
     max-height: 62dvh;
     overflow: auto; /* scroll interno para las entradas */
-    padding-bottom: 0; /* ya reservamos hueco con el 10% libre */
+    padding-bottom: 20dvh;
   }
   .diario-entrada {
     margin: clamp(20px, 5vw, 44px) 0;
@@ -586,7 +594,8 @@ body.page-extras {
 /* Contenido de extras */
 .page-extras .extras-main {
   padding: var(--nav-offset);
-  padding-top: 0; /* sin padding arriba, como pides */
+  padding-top: 20dvh;
+  padding-bottom: 20dvh;
   overflow: auto; /* scroll interno si crece */
   min-height: 0; /* permite que el grid-item en 1fr pueda encoger */
   max-height: 72dvh;
@@ -601,6 +610,29 @@ body.page-extras {
 @media (min-width: 1000px) {
   .page-extras .extras-main {
     max-height: 50dvh;
+  }
+}
+
+/* Desktop: extras como diario (2 columnas, scroll en la derecha) */
+@media (min-width: 641px) {
+  body.page-extras,
+  body.page-pensamientos {
+    grid-template-columns: 45% 55%;
+    grid-template-rows: 1fr;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  body.page-extras > h1,
+  body.page-pensamientos > h1 {
+    grid-column: 1;
+    padding: clamp(8px, 2vw, 16px);
+  }
+  .page-extras .extras-main,
+  .page-pensamientos .pens-main {
+    grid-column: 2;
+    max-height: 100dvh;
+    overflow: auto;
+    padding-bottom: 20dvh;
   }
 }
 
@@ -643,6 +675,28 @@ body.page-extras {
   opacity: 0.9;
 }
 
+/* Mobile: todas las secciones tipo diario */
+@media (max-width: 640px) {
+  body.page-extras,
+  body.page-pensamientos {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 25dvh 62dvh;
+    height: 100dvh;
+  }
+  body.page-extras > h1,
+  body.page-pensamientos > h1 {
+    grid-row: 1;
+  }
+  .page-extras .extras-main,
+  .page-pensamientos .pens-main {
+    grid-row: 2;
+    max-height: 62dvh;
+    overflow: auto;
+    padding-bottom: 20dvh;
+  }
+}
+
 /* ============================== 8) PAGES — 8.5 Capítulo (viewer) ======== */
 /* Capítulo — título principal */
 .page-capitulo h1 {
@@ -665,7 +719,7 @@ body.page-extras {
 }
 
 .page-capitulo .cap-body {
-  width: min(92vw, 76ch);
+  width: min(70vw, 76ch);
   margin: 0 auto;
   line-height: 1.5;
 }

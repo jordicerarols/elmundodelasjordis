@@ -2,6 +2,16 @@
 (function (global) {
   const $ = (root, sel) => root.querySelector(sel);
 
+  function setStatus(container, text){
+    container.innerHTML = '';
+    if (!text) return;
+    const tag = /^(UL|OL)$/i.test(container.tagName) ? 'li' : 'p';
+    const el = document.createElement(tag);
+    el.className = 'status';
+    el.textContent = text;
+    container.appendChild(el);
+  }
+
   async function fetchJSON(url) {
     const res = await fetch(`${url}?ts=${Date.now()}`, { cache: 'no-store' });
     if (!res.ok) throw new Error(`Error ${res.status} al cargar ${url}`);
@@ -290,7 +300,7 @@ function extractContentFromHTML(html){
     const cont = $(root, containerSel);
     if (!cont) throw new Error(`visualizador-core: no existe container ${containerSel}`);
 
-    cont.innerHTML = `<li>cargando...</li>`;
+    setStatus(cont, loadingText);
 
     try {
       // Intentar raíz del sitio y, si falla (404), intentar ../data para páginas dentro de /htmls
@@ -338,6 +348,12 @@ function extractContentFromHTML(html){
         return aKey < bKey ? 1 : -1;
       });
 
+      if (!items.length) {
+        console.info(`visualizador-core: categoría "${categoria}" sin entradas (0 items).`);
+        setStatus(cont, emptyText);
+        return;
+      }
+
       // Pensamientos: render agrupado por mes y día, con enlaces que reproducen audio
       if (categoria === 'pensamientos' && !renderItem) {
         // Normalizar fecha/hora si faltan
@@ -367,11 +383,6 @@ function extractContentFromHTML(html){
       }
 
       cont.innerHTML = '';
-      if (!items.length) {
-        console.info(`visualizador-core: categoría "${categoria}" sin entradas (0 items).`);
-        cont.innerHTML = '';
-        return;
-      }
 
       const renderer =
         renderItem ||
@@ -392,7 +403,7 @@ function extractContentFromHTML(html){
       cont.appendChild(frag);
     } catch (err) {
       console.error(err);
-      cont.innerHTML = `<li>${errorText}</li>`;
+      setStatus(cont, errorText);
     }
   }
 

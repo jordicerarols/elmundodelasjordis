@@ -14,10 +14,31 @@
     <a href="../index.html">casa</a>
   </nav>
 
-</body>
   <nav class="menu nav-right" aria-label="Acciones de las jordis">
     <a href="mailto:jordicerarols@gmail.com">mail</a>
-    <a href="https://www.instagram.com/elconventodelamor/" target="_blank" rel="noopener">instagram</a>
+    <a id="igLink" href="https://www.instagram.com/elmundodelasjordis/" target="_blank" rel="noopener">instagram</a>
     <!--<a href="https://paypal.me/lasjordis" target="_blank" rel="noopener">dona</a>-->
   </nav>
+
+  <script>
+    (async function () {
+      const link = document.getElementById('igLink');
+      if (!link) return;
+      try {
+        const res = await fetch('../data/instagram.json?ts=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        let handle = '';
+        if (typeof data === 'string') handle = data;
+        else if (Array.isArray(data) && typeof data[0] === 'string') handle = data[0];
+        else if (data && typeof data.handle === 'string') handle = data.handle;
+        handle = (handle || '').trim().replace(/^@/, '');
+        if (!handle) return;
+        link.href = `https://www.instagram.com/${handle}/`;
+      } catch (_) {
+        // Keep default href
+      }
+    })();
+  </script>
+</body>
 </html>

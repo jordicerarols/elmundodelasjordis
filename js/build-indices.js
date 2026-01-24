@@ -82,9 +82,24 @@ async function buildForCategory(cat) {
 
       if (cat === 'libros') {
         const base = e.name.replace(/\.[^.]+$/, '');
-        const parts = base.split('_'); // ej: funcionaria_2_2025-11-04-21-16
-        item.libro = parts[0] || '';
-        item.capitulo = parts[1] || '';
+        const parts = base.split('_'); // ej: el_mundo_de_las_jordis_0_2026-01-20-20-20
+        const datePartRe = /^\d{4}-\d{2}-\d{2}(?:-\d{2}-\d{2}(?:-\d{2})?)?$/;
+        let dateIdx = -1;
+        for (let i = parts.length - 1; i >= 0; i--) {
+          if (datePartRe.test(parts[i])) { dateIdx = i; break; }
+        }
+        let libroRaw = '';
+        let capRaw = '';
+        if (dateIdx >= 1) {
+          capRaw = parts[dateIdx - 1] || '';
+          libroRaw = parts.slice(0, dateIdx - 1).join('_');
+        } else {
+          libroRaw = parts[0] || '';
+          capRaw = parts[1] || '';
+        }
+        // Restaurar espacios desde el nombre saneado (espacios → "_")
+        item.libro = libroRaw.replace(/_/g, ' ').trim();
+        item.capitulo = capRaw.replace(/_/g, ' ').trim();
 
         // Leer el HTML y extraer el primer <h3> como título del capítulo
         try {

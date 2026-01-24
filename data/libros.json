@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "path": "data/libros/el_mundo_de_las_jordis_0_2026-01-20-20-20.html",
+    "date": "2026-01-20",
+    "time": "20:20:00",
+    "libro": "el mundo de las jordis",
+    "capitulo": "0",
+    "titulo": "proloqué",
+    "prev": "",
+    "next": ""
+  }
+]
