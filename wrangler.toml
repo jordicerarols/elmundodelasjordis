@@ -1,14 +1,14 @@
 name = "jordis"
 main = "src/index.ts"
 compatibility_date = "2024-09-23"
+account_id = "87f407717f9c49b03c1642607919d7ce"
 
-# Dominio final. Se deja COMENTADO hasta el cutover manual (ver README):
-# hoy elmundodelasjordis.com apunta a GitHub Pages (fallback). Cuando la
-# clienta y tú estéis listos, se descomenta, se hace deploy y se apunta el
-# custom domain al Worker desde el dashboard de Cloudflare. Reversible.
-# routes = [
-#   { pattern = "elmundodelasjordis.com", custom_domain = true }
-# ]
+# Dominio en producción: el Worker sirve el apex y www como custom domains.
+# (Cutover ejecutado el 7 jul 2026; DNS previo de GitHub Pages respaldado.)
+routes = [
+  { pattern = "elmundodelasjordis.com", custom_domain = true },
+  { pattern = "www.elmundodelasjordis.com", custom_domain = true }
+]
 
 [assets]
 directory = "./public"
@@ -18,8 +18,7 @@ run_worker_first = true
 [[d1_databases]]
 binding = "DB"
 database_name = "jordis-db"
-# Pega aquí el database_id que imprime `npm run db:create` (ver README).
-database_id = "REEMPLAZAR_TRAS_db:create"
+database_id = "d60120ab-6789-4d5b-8c89-fc681e98d0fa"
 
 [[r2_buckets]]
 binding = "STORAGE"
