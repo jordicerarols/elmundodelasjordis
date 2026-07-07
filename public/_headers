@@ -1,0 +1,7 @@
+# Cabeceras para los assets estáticos (Cloudflare Workers Assets las aplica en
+# el edge, también en respuestas cacheadas). Necesarias para que el documento
+# HTML quede "cross-origin isolated" (crossOriginIsolated === true) y el
+# compresor de vídeo (ffmpeg.wasm) pueda usar SharedArrayBuffer.
+/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
