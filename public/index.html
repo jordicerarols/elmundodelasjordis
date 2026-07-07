@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>el mundo de las jordis</title>
+  <link rel="stylesheet" href="/fonts/fonts.css" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="welcome-body">
+  <div class="welcome-grid">
+    <div class="welcome-left">
+      <div class="welcome-top">
+        <h1 class="site-title">el mundo de <a class="h1-link" href="/las-jordis">las jordis</a></h1>
+        <nav class="welcome-actions" aria-label="acciones">
+          <a class="linky" href="/escribir" data-authed-only hidden>escribir</a>
+          <a class="linky" href="/editar" data-authed-only hidden>editar las jordis</a>
+          <a class="linky" href="/login.html" data-anon-only>entrar</a>
+        </nav>
+      </div>
+      <ul class="hashtag-list" id="hashtagList" aria-label="filtrar por hashtag"></ul>
+    </div>
+    <main class="welcome-right">
+      <div class="feed" id="feed"></div>
+      <div class="feed-sentinel" id="sentinel"></div>
+    </main>
+  </div>
+  <script type="module" src="/js/page-welcome.js"></script>
+</body>
+</html>

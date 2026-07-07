@@ -1,0 +1,7 @@
+# Copia este archivo a `.dev.vars` (gitignored) para desarrollo local.
+# `wrangler dev` NO usa los `wrangler secret` de producción: lee estos.
+#
+# PASSWORD  = la contraseña de administradora (para entrar y editar).
+# AUTH_SECRET = cualquier string largo aleatorio (firma la cookie de sesión).
+PASSWORD=cambiame-en-local
+AUTH_SECRET=pon-aqui-un-string-largo-aleatorio

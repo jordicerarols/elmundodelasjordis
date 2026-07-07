@@ -1,0 +1,457 @@
+/* ============================================================================
+   el mundo de las jordis — style.css
+   Fuentes: Island Moments (títulos, nav, labels) + EB Garamond (cuerpo).
+   Cargadas self-hosted desde /fonts/fonts.css (ver <link> en cada HTML).
+   ============================================================================ */
+
+/* ------------------------------ 1) TOKENS -------------------------------- */
+:root {
+  --color-text: #333;
+  --color-bg: #fff;
+  --color-muted: #999;
+
+  /* Paleta pastel de las jordis (mismo espíritu que los cuadrados del seed) */
+  --c-azul: #7fd4ff;
+  --c-rosa: #f9a8d4;
+  --c-verde: #86efac;
+  --c-amarillo: #fde047;
+
+  --h1-size: clamp(40px, 11vw, 150px);
+  --p-size: clamp(16px, 1.25vw, 20px);
+  --nav-size: clamp(20px, 2.6vw, 30px);
+  --label-size: clamp(22px, 2.4vw, 34px);
+
+  --gap-x: clamp(28px, 5vw, 80px);
+  --gap-y: clamp(24px, 5vw, 72px);
+  --nav-offset: clamp(20px, 4vw, 60px);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+body {
+  font-family: "EB Garamond", Georgia, serif;
+  font-feature-settings: "kern" 1, "liga" 1, "clig" 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100svh;
+}
+
+h1, h2, h3 {
+  font-family: "Island Moments", cursive;
+  font-weight: 400;
+  line-height: 0.95;
+  margin: 0;
+}
+
+a { color: inherit; }
+
+/* Enlaces "de tinta": sin subrayado, hover gris con parpadeo suave */
+.h1-link, .menu a, .linky, .hashtag {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.5s ease-in-out;
+  cursor: pointer;
+}
+.h1-link:hover, .menu a:hover, .linky:hover, .hashtag:hover,
+.h1-link:focus-visible, .menu a:focus-visible, .linky:focus-visible, .hashtag:focus-visible {
+  color: var(--color-muted);
+  animation: blinkSoft 1.4s ease-in-out infinite alternate;
+  outline: none;
+}
+
+@keyframes blinkSoft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.linky {
+  font-family: "Island Moments", cursive;
+  font-size: var(--nav-size);
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* ------------------------------ 2) WELCOME ------------------------------- */
+/* Desktop: columna izquierda fija (título arriba, hashtags abajo) + columna
+   derecha con el feed que hace scroll de la página. Móvil: apilado. */
+.welcome-grid {
+  display: grid;
+  grid-template-columns: 42% 58%;
+  align-items: start;
+}
+
+.welcome-left {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--nav-offset);
+}
+
+.site-title {
+  font-size: var(--h1-size);
+  max-width: 10ch;
+}
+.site-title .h1-link { display: inline; }
+
+.welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(10px, 2vw, 24px);
+  margin-top: clamp(12px, 2vw, 24px);
+  font-family: "Island Moments", cursive;
+  font-size: var(--nav-size);
+}
+
+/* Lista de hashtags (abajo-izquierda) */
+.hashtag-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 1vw, 10px);
+  font-family: "Island Moments", cursive;
+  font-size: var(--label-size);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 45svh;
+  overflow: auto;
+}
+.hashtag-list .count { color: var(--color-muted); }
+.hashtag-list .active { color: var(--color-muted); }
+.hashtag-filter {
+  background: none; border: none; padding: 2px 0; text-align: left;
+  font: inherit; color: inherit; cursor: pointer;
+  transition: color 0.5s ease-in-out;
+}
+.hashtag-filter:hover, .hashtag-filter:focus-visible {
+  color: var(--color-muted); outline: none;
+}
+
+.welcome-right {
+  padding: var(--nav-offset);
+  min-width: 0;
+}
+
+/* ------------------------------ 3) FEED ---------------------------------- */
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 5vw, 64px);
+}
+
+.post { max-width: 60ch; }
+.post-titulo {
+  font-size: clamp(28px, 3.4vw, 52px);
+  margin-bottom: 0.25em;
+}
+.post-body {
+  font-size: var(--p-size);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.post-media {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: clamp(10px, 1.5vw, 18px);
+}
+.post-img, .post-video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 2px;
+}
+.post-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: clamp(8px, 1.5vw, 18px);
+  margin-top: clamp(8px, 1.2vw, 14px);
+  font-family: "Island Moments", cursive;
+  font-size: clamp(18px, 1.8vw, 24px);
+  color: var(--color-text);
+}
+.post-lugar::before { content: "· "; color: var(--color-muted); }
+.post-tags { display: inline-flex; flex-wrap: wrap; gap: 0.5em; }
+.post-controls { display: inline-flex; gap: 0.6em; margin-left: auto; }
+.post-controls .linky { font-size: clamp(16px, 1.6vw, 22px); }
+
+.feed-empty {
+  font-size: var(--p-size);
+  color: var(--color-muted);
+  font-style: italic;
+}
+.feed-sentinel { height: 1px; }
+
+/* ------------------------------ 4) PÁGINAS SIMPLES ----------------------- */
+/* Cabecera común de las páginas interiores (las jordis / escribir / editar) */
+.page {
+  padding: var(--nav-offset);
+  min-height: 100svh;
+}
+.page-title {
+  font-size: clamp(40px, 9vw, 130px);
+  text-align: center;
+  margin: clamp(10px, 3vw, 40px) 0 clamp(24px, 5vw, 64px);
+}
+.page-nav {
+  display: flex;
+  justify-content: center;
+  gap: clamp(16px, 3vw, 40px);
+  font-family: "Island Moments", cursive;
+  font-size: var(--nav-size);
+  margin-bottom: clamp(20px, 4vw, 48px);
+}
+
+/* --- las jordis: cuadrados de color --- */
+.jordis-intro {
+  text-align: center;
+  font-size: var(--p-size);
+  font-style: italic;
+  max-width: 60ch;
+  margin: 0 auto clamp(28px, 5vw, 64px);
+}
+.jordis-squares {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(20px, 4vw, 56px);
+}
+.jordi-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  /* El card mide lo que el cuadrado para que el texto envuelva bajo él y los
+     gaps del contenedor no se los coma el desbordamiento del cuadrado. */
+  width: clamp(140px, 18vw, 240px);
+}
+.jordi-square {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 2px;
+}
+.jordi-nombre {
+  font-family: "Island Moments", cursive;
+  font-size: var(--label-size);
+}
+.jordi-texto {
+  font-size: var(--p-size);
+  line-height: 1.5;
+  text-align: center;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------ 5) FORMULARIOS --------------------------- */
+/* Estética "papelería": labels en Island Moments, inputs discretos con línea
+   inferior. Usada por escribir y editar. */
+.form {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 3vw, 32px);
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.field label {
+  font-family: "Island Moments", cursive;
+  font-size: var(--label-size);
+}
+.field input[type="text"],
+.field textarea {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: var(--p-size);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-text);
+  padding: 8px 2px;
+  width: 100%;
+}
+.field textarea { min-height: 8em; resize: vertical; line-height: 1.5; }
+.field input:focus, .field textarea:focus {
+  outline: none;
+  border-bottom-color: var(--c-rosa);
+}
+.field-hint { font-size: 0.85em; color: var(--color-muted); }
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: clamp(16px, 3vw, 40px);
+  font-family: "Island Moments", cursive;
+  font-size: clamp(28px, 4vw, 56px);
+  margin-top: clamp(8px, 2vw, 24px);
+}
+.btn-submit {
+  background: none; border: none; padding: 0; cursor: pointer;
+  font: inherit; color: inherit;
+  transition: color 0.5s ease-in-out;
+}
+.btn-submit:hover, .btn-submit:focus-visible {
+  color: var(--color-muted); outline: none;
+}
+.btn-submit[disabled] { color: var(--color-muted); cursor: default; }
+
+/* Adjuntos (fotos/vídeo) del composer */
+.media-drop {
+  border: 1px dashed var(--color-muted);
+  border-radius: 3px;
+  padding: clamp(16px, 3vw, 32px);
+  text-align: center;
+  font-family: "Island Moments", cursive;
+  font-size: var(--nav-size);
+  color: var(--color-muted);
+  cursor: pointer;
+}
+.media-drop.dragover { color: var(--color-text); border-color: var(--color-text); }
+.media-previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+.media-thumb {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: #f2f2f2;
+}
+.media-thumb img, .media-thumb video {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.media-thumb .status {
+  position: absolute; inset: auto 0 0 0;
+  font-size: 11px; text-align: center;
+  background: rgba(255,255,255,0.85); color: var(--color-text);
+  padding: 2px;
+}
+.media-thumb .remove {
+  position: absolute; top: 4px; right: 4px;
+  width: 22px; height: 22px; border-radius: 50%;
+  border: none; background: rgba(0,0,0,0.6); color: #fff;
+  cursor: pointer; line-height: 1; font-size: 14px;
+}
+
+/* --- editar las jordis: filas --- */
+.jordi-rows { display: flex; flex-direction: column; gap: clamp(18px, 3vw, 32px); }
+.jordi-row {
+  display: grid;
+  grid-template-columns: minmax(8ch, 1fr) auto minmax(12ch, 2fr) auto;
+  gap: clamp(10px, 2vw, 24px);
+  align-items: center;
+}
+.jordi-row .nombre-in { font-family: "Island Moments", cursive; font-size: var(--label-size); }
+.jordi-row input[type="color"] {
+  width: 44px; height: 44px; border: 1px solid var(--color-muted);
+  border-radius: 4px; background: none; cursor: pointer; padding: 2px;
+}
+.jordi-row .texto-in { min-height: 3em; }
+.jordi-row .del { align-self: center; display: inline-flex; gap: 0.8em; }
+.add-jordi {
+  font-family: "Island Moments", cursive;
+  font-size: var(--label-size);
+  color: var(--color-muted);
+}
+
+/* ------------------------------ 6) LOGIN --------------------------------- */
+.login-body {
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+}
+.login-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: min(90vw, 360px);
+  text-align: center;
+}
+.login-card h1 { font-size: clamp(48px, 12vw, 120px); }
+.login-card input {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: var(--p-size);
+  padding: 10px 8px;
+  border: none;
+  border-bottom: 1px solid var(--color-text);
+  background: transparent;
+  width: 100%;
+  text-align: center;
+}
+.login-card input:focus { outline: none; border-bottom-color: var(--c-rosa); }
+.login-card button, .login-card .btn-secondary {
+  font-family: "Island Moments", cursive;
+  font-size: var(--nav-size);
+  background: none; border: none; cursor: pointer; color: inherit;
+  text-decoration: none;
+}
+.login-err { color: #c0392b; min-height: 1.4em; font-style: italic; }
+
+/* ------------------------------ 7) TOASTS -------------------------------- */
+#toastHost {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: 8px; z-index: 50;
+  pointer-events: none;
+}
+.toast {
+  background: var(--color-text); color: var(--color-bg);
+  padding: 10px 16px; border-radius: 4px; font-size: 15px;
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.toast.show { opacity: 0.95; }
+.toast-error { background: #c0392b; }
+
+/* ------------------------------ 8) RESPONSIVE ---------------------------- */
+@media (max-width: 760px) {
+  :root {
+    --h1-size: clamp(56px, 16vw, 120px);
+    --p-size: clamp(17px, 4.5vw, 21px);
+    --nav-size: clamp(22px, 6vw, 34px);
+    --label-size: clamp(24px, 6vw, 36px);
+    --nav-offset: clamp(16px, 5vw, 28px);
+  }
+  .welcome-grid { grid-template-columns: 1fr; }
+  .welcome-left {
+    position: static;
+    height: auto;
+    display: block;
+  }
+  .site-title { max-width: none; }
+  .hashtag-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    max-height: none;
+    margin-top: clamp(18px, 5vw, 32px);
+  }
+  .welcome-right { padding-top: clamp(20px, 6vw, 36px); }
+  .jordi-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding-bottom: clamp(14px, 4vw, 24px);
+    border-bottom: 1px solid #eee;
+  }
+}

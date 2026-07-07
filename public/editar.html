@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>editar las jordis</title>
+  <link rel="stylesheet" href="/fonts/fonts.css" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="page">
+  <nav class="page-nav" aria-label="secciones">
+    <a class="linky" href="/">casa</a>
+    <a class="linky" href="/las-jordis">las jordis</a>
+    <a class="linky" href="/escribir">escribir</a>
+    <form method="post" action="/logout" style="display:inline">
+      <button class="linky" type="submit">salir</button>
+    </form>
+  </nav>
+  <h1 class="page-title">editar las jordis</h1>
+
+  <div class="form">
+    <div class="jordi-rows" id="jordiRows"></div>
+    <div class="form-actions" style="justify-content:flex-start">
+      <button class="add-jordi btn-submit" id="addJordi" type="button">añadir jordi…</button>
+    </div>
+  </div>
+
+  <script type="module" src="/js/jordis-edit.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+name = "jordis"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+
+# Dominio final. Se deja COMENTADO hasta el cutover manual (ver README):
+# hoy elmundodelasjordis.com apunta a GitHub Pages (fallback). Cuando la
+# clienta y tú estéis listos, se descomenta, se hace deploy y se apunta el
+# custom domain al Worker desde el dashboard de Cloudflare. Reversible.
+# routes = [
+#   { pattern = "elmundodelasjordis.com", custom_domain = true }
+# ]
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "jordis-db"
+# Pega aquí el database_id que imprime `npm run db:create` (ver README).
+database_id = "REEMPLAZAR_TRAS_db:create"
+
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "jordis-storage"
+
+# Rate limiting nativo de Workers (sin KV ni recurso externo). Protege las
+# escrituras authed (crear posts, subir media, CRUD de jordis) frente a un
+# bucle accidental que sature R2/D1. namespace_id es un id lógico que eliges
+# tú; period sólo admite 10 o 60 (segundos).
+[[unsafe.bindings]]
+name = "WRITE_LIMITER"
+type = "ratelimit"
+namespace_id = "2001"
+simple = { limit = 100, period = 60 }

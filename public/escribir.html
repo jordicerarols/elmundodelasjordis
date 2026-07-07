@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>escribir</title>
+  <link rel="stylesheet" href="/fonts/fonts.css" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="page">
+  <nav class="page-nav" aria-label="secciones">
+    <a class="linky" href="/">casa</a>
+    <a class="linky" href="/editar">editar las jordis</a>
+    <form method="post" action="/logout" style="display:inline">
+      <button class="linky" type="submit">salir</button>
+    </form>
+  </nav>
+  <h1 class="page-title" id="pageTitle">escribir</h1>
+
+  <form class="form" id="composer" autocomplete="off">
+    <div class="field">
+      <label for="f-titulo">título</label>
+      <input type="text" id="f-titulo" name="titulo" maxlength="200" />
+    </div>
+    <div class="field">
+      <label for="f-hashtags">hashtags</label>
+      <input type="text" id="f-hashtags" name="hashtags" placeholder="#hola #mundo" />
+      <span class="field-hint">separados por espacios; también valen los # que escribas en el contenido</span>
+    </div>
+    <div class="field">
+      <label for="f-contenido">contenido</label>
+      <textarea id="f-contenido" name="contenido" maxlength="4000"></textarea>
+    </div>
+    <div class="field">
+      <label for="f-lugar">lugar</label>
+      <input type="text" id="f-lugar" name="lugar" maxlength="120" />
+    </div>
+    <div class="field" id="mediaField">
+      <label>fotos y vídeo</label>
+      <div class="media-drop" id="mediaDrop" tabindex="0" role="button">
+        arrastra o pulsa para añadir fotos / vídeo
+      </div>
+      <input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden />
+      <div class="media-previews" id="mediaPreviews"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-submit" type="submit" id="submitBtn">subir</button>
+    </div>
+  </form>
+
+  <script type="module" src="/js/composer.js"></script>
+</body>
+</html>
