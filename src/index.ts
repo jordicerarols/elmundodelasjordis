@@ -120,7 +120,12 @@ function rateLimit(pick: (env: Bindings) => RateLimit) {
 
 // ---------- auth ----------
 
-app.post("/login", async (c) => {
+// OJO: estos POST van a rutas /api/* a propósito. En producción, Cloudflare
+// Assets intercepta los POST a rutas que coinciden con un archivo estático
+// (/login ↔ public/login.html) y devuelve 405 ANTES de llegar al worker. Las
+// rutas /api/* no tienen asset homónimo, así que el worker siempre las maneja.
+// La PÁGINA de login se sigue sirviendo en GET /login (más abajo).
+app.post("/api/login", async (c) => {
   const form = await c.req.parseBody();
   const pw = (form.password as string) || "";
   if (!c.env.PASSWORD || !timingSafeEqual(pw, c.env.PASSWORD)) {
@@ -130,7 +135,7 @@ app.post("/login", async (c) => {
   return c.redirect("/");
 });
 
-app.post("/logout", (c) => {
+app.post("/api/logout", (c) => {
   clearAuthCookie(c);
   return c.redirect("/");
 });
