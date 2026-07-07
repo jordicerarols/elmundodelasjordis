@@ -132,6 +132,8 @@ a { color: inherit; }
 }
 .hashtag-list .count { color: var(--color-muted); }
 .hashtag-list .active { color: var(--color-muted); }
+/* Respiro que despega el grupo de tags con color (jordi) de los normales. */
+.hashtag-list .jordi-group-start { margin-top: clamp(10px, 2vw, 20px); }
 .hashtag-filter {
   background: none; border: none; padding: 2px 0; text-align: left;
   font: inherit; color: inherit; cursor: pointer;
@@ -186,6 +188,13 @@ a { color: inherit; }
   font-size: clamp(18px, 1.8vw, 24px);
   color: var(--color-text);
 }
+/* La ubicación es un <button> que filtra el feed: se ve como texto, clicable. */
+.post-lugar {
+  background: none; border: none; padding: 0; margin: 0;
+  font: inherit; color: inherit; cursor: pointer;
+  transition: color 0.3s ease;
+}
+.post-lugar:hover, .post-lugar:focus-visible { color: var(--color-muted); outline: none; }
 .post-lugar::before { content: "· "; color: var(--color-muted); }
 .post-tags { display: inline-flex; flex-wrap: wrap; gap: 0.5em; }
 .post-controls { display: inline-flex; gap: 0.6em; margin-left: auto; }
@@ -197,6 +206,17 @@ a { color: inherit; }
   font-style: italic;
 }
 .feed-sentinel { height: 1px; }
+
+/* Transición al filtrar el feed (por hashtag o por ubicación): fade + leve
+   subida del contenido recién cargado. Se re-dispara desde feed.js. */
+@keyframes feedEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.feed.feed-enter { animation: feedEnter 0.3s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .feed.feed-enter { animation: none; }
+}
 
 /* ------------------------------ 4) PÁGINAS SIMPLES ----------------------- */
 /* Cabecera común de las páginas interiores (las jordis / escribir / editar) */
@@ -245,17 +265,81 @@ a { color: inherit; }
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 2px;
+  /* Es un <button>: quitamos el chrome por defecto. */
+  padding: 0;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 .jordi-nombre {
   font-family: "Island Moments", cursive;
   font-size: var(--label-size);
 }
-.jordi-texto {
+.jordi-subtitulo {
   font-size: var(--p-size);
+  font-style: italic;
   line-height: 1.5;
   text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* Jordi activa: su cuadrado se pone en blanco (con un borde tenue para que se
+   distinga del fondo tintado del color de esa jordi). */
+.jordi-card.is-active .jordi-square {
+  background-color: #fff !important;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+/* El fondo de la página lo pinta el color de la jordi activa (inline style en
+   body). Suavizamos la transición. `.tag-tinted` es lo mismo en la home cuando
+   el filtro activo es un tag de jordi (#jordi, #jordy, …). */
+body.jordi-activa,
+body.tag-tinted {
+  transition: background-color 0.35s ease;
+}
+
+/* Un #hashtag que coincide con una jordi lleva su color (inline style). Lo
+   engrosamos un pelín para que el pastel se lea bien sobre blanco. */
+.hashtag-jordi {
+  font-weight: 600;
+}
+/* Cuando el fondo está teñido con el color de una jordi, ese mismo tag quedaría
+   pastel-sobre-pastel (ilegible). Un halo oscuro lo despega del fondo sea cual
+   sea el color activo. */
+body.tag-tinted .hashtag-jordi {
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.55), 0 0 3px rgba(0, 0, 0, 0.35);
+}
+
+/* Contenido de la jordi activa, bajo la rejilla. */
+.jordi-content {
+  max-width: 60ch;
+  margin: clamp(28px, 5vw, 64px) auto 0;
+  text-align: center;
+}
+.jordi-content-nombre {
+  font-family: "Island Moments", cursive;
+  font-size: clamp(32px, 6vw, 72px);
+}
+.jordi-content-subtitulo {
+  font-size: var(--p-size);
+  font-style: italic;
+  margin-bottom: clamp(14px, 3vw, 28px);
+}
+.jordi-content-texto {
+  font-size: var(--p-size);
+  line-height: 1.6;
+  text-align: left;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+/* Fade de entrada al cambiar de una jordi a otra (re-disparado desde el JS). */
+@keyframes jordiContentEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.jordi-content.jordi-content-enter { animation: jordiContentEnter 0.3s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .jordi-content.jordi-content-enter { animation: none; }
 }
 
 /* ------------------------------ 5) FORMULARIOS --------------------------- */
@@ -359,11 +443,12 @@ a { color: inherit; }
 .jordi-rows { display: flex; flex-direction: column; gap: clamp(18px, 3vw, 32px); }
 .jordi-row {
   display: grid;
-  grid-template-columns: minmax(8ch, 1fr) auto minmax(12ch, 2fr) auto;
+  grid-template-columns: minmax(8ch, 1fr) minmax(8ch, 1fr) auto minmax(12ch, 2fr) auto;
   gap: clamp(10px, 2vw, 24px);
   align-items: center;
 }
 .jordi-row .nombre-in { font-family: "Island Moments", cursive; font-size: var(--label-size); }
+.jordi-row .subtitulo-in { font-style: italic; }
 .jordi-row input[type="color"] {
   width: 44px; height: 44px; border: 1px solid var(--color-muted);
   border-radius: 4px; background: none; cursor: pointer; padding: 2px;

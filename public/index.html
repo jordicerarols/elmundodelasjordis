@@ -16,6 +16,9 @@
           <a class="linky" href="/escribir" data-authed-only hidden>escribir</a>
           <a class="linky" href="/editar" data-authed-only hidden>editar las jordis</a>
           <a class="linky" href="/login" data-anon-only>entrar</a>
+          <form method="post" action="/api/logout" data-authed-only hidden style="display:inline">
+            <button class="linky" type="submit">salir</button>
+          </form>
         </nav>
       </div>
       <ul class="hashtag-list" id="hashtagList" aria-label="filtrar por hashtag"></ul>

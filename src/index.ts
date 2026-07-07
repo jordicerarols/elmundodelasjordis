@@ -39,6 +39,7 @@ const TITULO_MAX_LEN = 200;
 const TEXT_MAX_LEN = 4000;
 const LOCATION_MAX_LEN = 120;
 const JORDI_NOMBRE_MAX_LEN = 80;
+const JORDI_SUBTITULO_MAX_LEN = 120;
 const JORDI_TEXTO_MAX_LEN = 4000;
 
 // Color hex #rrggbb. Se valida server-side y el cliente sólo lo aplica vía
@@ -158,12 +159,13 @@ type PostType = "image" | "video";
 app.get("/api/posts", async (c) => {
   const cursor = c.req.query("cursor") || undefined;
   const tag = c.req.query("tag") || undefined;
+  const location = c.req.query("ubicacion") || undefined;
   const q = c.req.query("q") || undefined;
   const rawType = c.req.query("type");
   const type = rawType && POST_TYPES.has(rawType) ? (rawType as PostType) : undefined;
   const limitRaw = parseInt(c.req.query("limit") || "20");
   const limit = Number.isFinite(limitRaw) ? limitRaw : 20;
-  const result = await listPosts(c.env.DB, { cursor, tag, q, type, limit });
+  const result = await listPosts(c.env.DB, { cursor, tag, location, q, type, limit });
   return c.json(result);
 });
 
@@ -310,17 +312,18 @@ app.delete("/api/posts/:id", requireAuth(), requireCsrf(), async (c) => {
 
 // ---------- API: jordis (writes, gated) ----------
 
-type JordiBody = { nombre?: string; color?: string; texto?: string | null };
+type JordiBody = { nombre?: string; subtitulo?: string | null; color?: string; texto?: string | null };
 
 function validateJordi(body: JordiBody):
   | { ok: false; error: string }
-  | { ok: true; nombre: string; color: string; texto: string | null } {
+  | { ok: true; nombre: string; subtitulo: string | null; color: string; texto: string | null } {
   const nombre = String(body.nombre ?? "").trim().slice(0, JORDI_NOMBRE_MAX_LEN);
   if (!nombre) return { ok: false, error: "nombre vacio" };
+  const subtitulo = String(body.subtitulo ?? "").trim().slice(0, JORDI_SUBTITULO_MAX_LEN) || null;
   const color = String(body.color ?? "").trim();
   if (!HEX_COLOR_RE.test(color)) return { ok: false, error: "color invalido (usa #rrggbb)" };
   const texto = String(body.texto ?? "").trim().slice(0, JORDI_TEXTO_MAX_LEN) || null;
-  return { ok: true, nombre, color, texto };
+  return { ok: true, nombre, subtitulo, color, texto };
 }
 
 app.post("/api/jordis", requireAuth(), requireCsrf(), rateLimit((e) => e.WRITE_LIMITER), async (c) => {
@@ -332,7 +335,7 @@ app.post("/api/jordis", requireAuth(), requireCsrf(), rateLimit((e) => e.WRITE_L
   }
   const v = validateJordi(body);
   if (!v.ok) return c.json({ error: v.error }, 400);
-  const jordi = await createJordi(c.env.DB, v.nombre, v.color, v.texto);
+  const jordi = await createJordi(c.env.DB, v.nombre, v.subtitulo, v.color, v.texto);
   return c.json(jordi, 201);
 });
 
@@ -369,6 +372,7 @@ app.patch("/api/jordis/:id", requireAuth(), requireCsrf(), rateLimit((e) => e.WR
   if (!v.ok) return c.json({ error: v.error }, 400);
   const updated = await updateJordi(c.env.DB, id, {
     nombre: v.nombre,
+    subtitulo: v.subtitulo,
     color: v.color,
     texto: v.texto,
   });

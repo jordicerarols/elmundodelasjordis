@@ -56,6 +56,22 @@ npm run deploy
 > El feed **estrena vacío**: el contenido de la web antigua queda archivado en el
 > repo viejo `jordis` y NO se migra.
 
+### Migraciones de esquema
+
+`schema.sql` es la fuente de verdad y es seguro re-aplicarlo (`CREATE ... IF NOT
+EXISTS` + seeds guardados). Pero SQLite no tiene `ALTER TABLE` idempotente, así
+que **añadir columnas a tablas ya existentes** va en archivos aparte `migrate-*.sql`
+de **una sola ejecución**. Base nueva → sólo `db:migrate:remote`, no necesitas nada más.
+
+- **`subtitulo` en `jordis`** (nombre propio jordi/jordy/… ↔ faceta como subtítulo).
+  Sólo hace falta si tu D1 remota se creó con el esquema viejo (comprueba con
+  `PRAGMA table_info(jordis)` si falta la columna `subtitulo`):
+
+  ```bash
+  npm run db:migrate:subtitulo:remote   # UNA vez; añade la columna y reubica datos
+  npm run db:migrate:remote             # opcional después: re-aplica schema (no-op)
+  ```
+
 ---
 
 ## Deploy automático con GitHub Actions
@@ -147,6 +163,7 @@ public/
                api, auth, utils, state, y el pipeline de compresión reusado
                (compressor*, editor-geom) + glue de ffmpeg (ffmpeg.js, 814.ffmpeg.js)
 schema.sql     esquema único (tablas + seed de las 4 jordis)
+migrate-*.sql  migraciones puntuales (run once) para D1 ya existentes
 ```
 
 El motor se adaptó de [`twoitter`](https://github.com/meowrhino) (mismo autor):

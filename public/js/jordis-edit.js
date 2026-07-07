@@ -17,10 +17,13 @@ function buildRow(jordi) {
   const nombre = el('input', { class: 'nombre-in', attrs: { type: 'text', placeholder: 'nombre', maxlength: '80' } });
   nombre.value = jordi?.nombre || '';
 
+  const subtitulo = el('input', { class: 'subtitulo-in', attrs: { type: 'text', placeholder: 'subtítulo', maxlength: '120' } });
+  subtitulo.value = jordi?.subtitulo || '';
+
   const color = el('input', { attrs: { type: 'color' } });
   color.value = isHexColor(jordi?.color) ? jordi.color : DEFAULT_COLOR;
 
-  const texto = el('textarea', { class: 'texto-in', attrs: { placeholder: 'texto', maxlength: '4000' } });
+  const texto = el('textarea', { class: 'texto-in', attrs: { placeholder: 'contenido', maxlength: '4000' } });
   texto.value = jordi?.texto || '';
 
   const actions = el('span', { class: 'del', style: '' });
@@ -28,7 +31,7 @@ function buildRow(jordi) {
   actions.appendChild(saveBtn);
 
   saveBtn.addEventListener('click', async () => {
-    const payload = { nombre: nombre.value.trim(), color: color.value, texto: texto.value };
+    const payload = { nombre: nombre.value.trim(), subtitulo: subtitulo.value.trim(), color: color.value, texto: texto.value };
     if (!payload.nombre) { toast('pon un nombre', 'error'); return; }
     saveBtn.disabled = true;
     const id = row.dataset.id;
@@ -59,6 +62,7 @@ function buildRow(jordi) {
   actions.appendChild(delBtn);
 
   row.appendChild(nombre);
+  row.appendChild(subtitulo);
   row.appendChild(color);
   row.appendChild(texto);
   row.appendChild(actions);

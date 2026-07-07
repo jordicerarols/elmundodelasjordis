@@ -8,6 +8,8 @@
     "db:create": "wrangler d1 create jordis-db",
     "db:migrate": "wrangler d1 execute jordis-db --local --file=schema.sql",
     "db:migrate:remote": "wrangler d1 execute jordis-db --remote --file=schema.sql",
+    "db:migrate:subtitulo": "wrangler d1 execute jordis-db --local --file=migrate-add-subtitulo.sql",
+    "db:migrate:subtitulo:remote": "wrangler d1 execute jordis-db --remote --file=migrate-add-subtitulo.sql",
     "r2:create": "wrangler r2 bucket create jordis-storage"
   },
   "dependencies": {

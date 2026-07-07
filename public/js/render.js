@@ -4,7 +4,18 @@
 // inserta con textContent / createTextNode. NUNCA se compone innerHTML con
 // datos del post, así que un título como `<img onerror=…>` se muestra literal.
 
-import { el } from './utils.js';
+import { el, isHexColor } from './utils.js';
+import { JORDI_COLORS } from './state.js';
+
+// Si el tag coincide con el nombre de una jordi, tiñe el enlace con su color.
+// El color sólo se aplica vía style tras revalidar el hex (nunca como HTML).
+export function tintHashtag(a, tag) {
+  const color = JORDI_COLORS[String(tag).toLowerCase()];
+  if (isHexColor(color)) {
+    a.classList.add('hashtag-jordi');
+    a.style.color = color;
+  }
+}
 
 // Inserta el cuerpo de texto detectando #hashtags y convirtiéndolos en enlaces,
 // sin construir HTML: alterna nodos de texto y <a> (data-tag) creados con
@@ -23,6 +34,7 @@ function appendBodyWithHashtags(container, text) {
       text: `#${m[1]}`,
       attrs: { href: `/?tag=${encodeURIComponent(tag)}`, 'data-tag': tag },
     });
+    tintHashtag(a, tag);
     container.appendChild(a);
     last = m.index + m[0].length;
   }
@@ -71,17 +83,24 @@ export function renderPost(post, opts = {}) {
 
   const foot = el('footer', { class: 'post-foot' });
   if (post.location) {
-    foot.appendChild(el('span', { class: 'post-lugar', text: post.location }));
+    // Botón: al tocarlo se filtra el feed por esa ubicación (delegado en la home).
+    foot.appendChild(el('button', {
+      class: 'post-lugar',
+      text: post.location,
+      attrs: { type: 'button', 'data-loc': post.location },
+    }));
   }
   // Hashtags del post (los del campo dedicado + los del cuerpo) como chips.
   if (post.hashtags?.length) {
     const tags = el('span', { class: 'post-tags' });
     for (const t of post.hashtags) {
-      tags.appendChild(el('a', {
+      const a = el('a', {
         class: 'hashtag',
         text: `#${t}`,
         attrs: { href: `/?tag=${encodeURIComponent(t)}`, 'data-tag': t },
-      }));
+      });
+      tintHashtag(a, t);
+      tags.appendChild(a);
     }
     foot.appendChild(tags);
   }

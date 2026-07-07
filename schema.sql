@@ -44,12 +44,15 @@ CREATE TABLE IF NOT EXISTS hashtags (
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );
 
--- Las "jordis": las facetas que presenta la web. Cada una tiene un nombre, un
--- color (hex #rrggbb, se pinta como cuadrado), un texto de presentación y un
--- orden. CRUD protegido por contraseña desde la página "editar las jordis".
+-- Las "jordis": las facetas que presenta la web. Cada una tiene un nombre
+-- (jordi/jordy/yordy/iordi), un subtítulo (la faceta: emoción, comunicación…),
+-- un color (hex #rrggbb, se pinta como cuadrado), el texto de contenido que se
+-- muestra al activarla, y un orden. CRUD protegido por contraseña desde la
+-- página "editar las jordis".
 CREATE TABLE IF NOT EXISTS jordis (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT NOT NULL,
+    subtitulo TEXT,
     color TEXT NOT NULL,
     texto TEXT,
     orden INTEGER NOT NULL DEFAULT 0,
@@ -62,18 +65,19 @@ CREATE INDEX IF NOT EXISTS idx_media_post ON media(post_id, position);
 CREATE INDEX IF NOT EXISTS idx_hashtags_tag ON hashtags(tag);
 CREATE INDEX IF NOT EXISTS idx_jordis_orden ON jordis(orden, id);
 
--- Seed de las 4 jordis iniciales. Colores pastel tomados del mockup
+-- Seed de las 4 jordis iniciales. `nombre` es el nombre propio de cada jordi y
+-- `subtitulo` la faceta que representa. Colores pastel tomados del mockup
 -- `las jordis nuevo.png`. Idempotente: sólo siembra si la tabla está vacía
 -- (el WHERE NOT EXISTS evita duplicar en re-aplicaciones del schema).
-INSERT INTO jordis (nombre, color, texto, orden)
-SELECT 'emoción', '#7fd4ff', '', 0
+INSERT INTO jordis (nombre, subtitulo, color, texto, orden)
+SELECT 'jordi', 'emoción', '#7fd4ff', '', 0
 WHERE NOT EXISTS (SELECT 1 FROM jordis);
-INSERT INTO jordis (nombre, color, texto, orden)
-SELECT 'comunicación', '#f9a8d4', '', 1
+INSERT INTO jordis (nombre, subtitulo, color, texto, orden)
+SELECT 'jordy', 'comunicación', '#f9a8d4', '', 1
 WHERE (SELECT COUNT(*) FROM jordis) = 1;
-INSERT INTO jordis (nombre, color, texto, orden)
-SELECT 'estética', '#86efac', '', 2
+INSERT INTO jordis (nombre, subtitulo, color, texto, orden)
+SELECT 'yordy', 'estética', '#86efac', '', 2
 WHERE (SELECT COUNT(*) FROM jordis) = 2;
-INSERT INTO jordis (nombre, color, texto, orden)
-SELECT 'espiritualidad', '#fde047', '', 3
+INSERT INTO jordis (nombre, subtitulo, color, texto, orden)
+SELECT 'iordi', 'espiritualidad', '#fde047', '', 3
 WHERE (SELECT COUNT(*) FROM jordis) = 3;

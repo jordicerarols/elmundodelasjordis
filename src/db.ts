@@ -30,6 +30,7 @@ export interface Post extends PostRow {
 export interface JordiRow {
   id: number;
   nombre: string;
+  subtitulo: string | null;
   color: string;
   texto: string | null;
   orden: number;
@@ -113,6 +114,7 @@ export async function listPosts(
   opts: {
     cursor?: string;
     tag?: string;
+    location?: string;
     q?: string;
     type?: "image" | "video";
     limit: number;
@@ -127,6 +129,12 @@ export async function listPosts(
       "EXISTS (SELECT 1 FROM hashtags h WHERE h.post_id = p.id AND h.tag = ?)",
     );
     args.push(opts.tag.toLowerCase());
+  }
+  if (opts.location) {
+    // Coincidencia exacta con la etiqueta de lugar (se muestra tal cual, así que
+    // se filtra tal cual). Cap defensivo por si llega un valor enorme.
+    conds.push("p.location = ?");
+    args.push(opts.location.slice(0, 120));
   }
   if (opts.type === "image" || opts.type === "video") {
     conds.push("EXISTS (SELECT 1 FROM media m WHERE m.post_id = p.id AND m.kind = ?)");
@@ -271,6 +279,7 @@ export async function listJordis(db: D1Database): Promise<JordiRow[]> {
 export async function createJordi(
   db: D1Database,
   nombre: string,
+  subtitulo: string | null,
   color: string,
   texto: string | null,
 ): Promise<JordiRow> {
@@ -281,9 +290,9 @@ export async function createJordi(
   const orden = (max?.m ?? -1) + 1;
   const row = await db
     .prepare(
-      "INSERT INTO jordis (nombre, color, texto, orden) VALUES (?, ?, ?, ?) RETURNING *",
+      "INSERT INTO jordis (nombre, subtitulo, color, texto, orden) VALUES (?, ?, ?, ?, ?) RETURNING *",
     )
-    .bind(nombre, color, texto, orden)
+    .bind(nombre, subtitulo, color, texto, orden)
     .first<JordiRow>();
   return row!;
 }
@@ -291,13 +300,13 @@ export async function createJordi(
 export async function updateJordi(
   db: D1Database,
   id: number,
-  fields: { nombre: string; color: string; texto: string | null },
+  fields: { nombre: string; subtitulo: string | null; color: string; texto: string | null },
 ): Promise<JordiRow | null> {
   const row = await db
     .prepare(
-      "UPDATE jordis SET nombre = ?, color = ?, texto = ? WHERE id = ? RETURNING *",
+      "UPDATE jordis SET nombre = ?, subtitulo = ?, color = ?, texto = ? WHERE id = ? RETURNING *",
     )
-    .bind(fields.nombre, fields.color, fields.texto, id)
+    .bind(fields.nombre, fields.subtitulo, fields.color, fields.texto, id)
     .first<JordiRow>();
   return row ?? null;
 }

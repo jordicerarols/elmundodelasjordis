@@ -9,3 +9,11 @@ export const CSRF_HEADERS = { 'x-jordis-csrf': '1' };
 // Objeto mutable (no se reasigna el binding) para que los importadores vean
 // los valores ya actualizados por live binding.
 export const MEDIA_LIMITS = { image: 10485760, video: 52428800 };
+
+// Mapa nombre-de-jordi (en minúsculas) → color hex. Lo rellena la home tras
+// cargar /api/jordis; render.js lo lee para colorear los #hashtags que
+// coincidan con el nombre de una jordi (#jordi, #jordy, …). Mutable (no se
+// reasigna el binding) para que los importadores vean los valores por live
+// binding. La clave es el nombre en minúsculas para casar con el tag (que
+// siempre se normaliza a minúsculas).
+export const JORDI_COLORS = {};
