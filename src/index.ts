@@ -124,7 +124,7 @@ app.post("/login", async (c) => {
   const form = await c.req.parseBody();
   const pw = (form.password as string) || "";
   if (!c.env.PASSWORD || !timingSafeEqual(pw, c.env.PASSWORD)) {
-    return c.redirect("/login.html?e=1");
+    return c.redirect("/login?e=1");
   }
   await setAuthCookie(c, c.env.AUTH_SECRET);
   return c.redirect("/");
@@ -464,6 +464,10 @@ const htmlRoute = (file: string) => (c: Context<{ Bindings: Bindings }>) =>
   c.env.ASSETS.fetch(new Request(new URL(file, c.req.url)));
 
 app.get("/", htmlRoute("/index.html"));
+// GET /login sirve la página de entrada. Necesario porque el POST /login
+// (formulario) registra la ruta y, sin este GET, un acceso por la URL limpia
+// /login (Cloudflare Assets) devolvía 405. Sirve el asset login.html.
+app.get("/login", htmlRoute("/login.html"));
 app.get("/las-jordis", htmlRoute("/las-jordis.html"));
 app.get("/escribir", requireAuth(), htmlRoute("/escribir.html"));
 app.get("/editar", requireAuth(), htmlRoute("/editar.html"));

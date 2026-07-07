@@ -91,7 +91,7 @@ export function requireAuth<E extends AuthEnv>() {
       if (accepts.includes("application/json") || c.req.path.startsWith("/api/")) {
         return c.json({ error: "no autenticado" }, 401);
       }
-      return c.redirect("/login.html");
+      return c.redirect("/login");
     }
     await next();
   };
