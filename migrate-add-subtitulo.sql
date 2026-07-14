@@ -1,6 +1,11 @@
 -- ============================================================================
 -- Migración PUNTUAL (run once) — añade la columna `subtitulo` a `jordis`.
 --
+-- ✅ ESTADO: aplicada en la D1 de PRODUCCIÓN el 14 jul 2026 (desde la consola
+--    del dashboard de Cloudflare; sólo el ALTER — los UPDATE de abajo no se
+--    ejecutaron porque los valores se pusieron a mano desde /editar). Se
+--    conserva por si hay que reconstruir una base con el esquema viejo.
+--
 -- Contexto: al principio cada jordi guardaba la faceta (emoción, comunicación…)
 -- en `nombre`. Ahora `nombre` es el nombre propio (jordi/jordy/yordy/iordi) y la
 -- faceta vive en `subtitulo`. Las bases NUEVAS ya nacen bien desde schema.sql;

@@ -20,11 +20,6 @@ const PRESET = {
 // libvorbis: libopus crashea ffmpeg.wasm (issue #591). En CLI sí va opus.
 const VIDEO_CODEC = 'libvpx';
 const AUDIO_CODEC = 'libvorbis';
-// Bitrate del re-encode de audio al recortar una nota (fallback cuando el copy
-// sin pérdida no cuadra). La fuente ya viene comprimida → 96k basta sin añadir
-// artefactos. Distinto de PRESET.audioBitrate (128k, audio de vídeos) y de la
-// grabación nueva (recorder.js VOICE_NOTE_BITRATE, 24 kbps Opus).
-const AUDIO_TRIM_BITRATE = '96k';
 
 const CORE_MT_BASE = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core-mt@0.12.9/dist/umd';
 const WORKERFS_THRESHOLD = 200 * 1024 * 1024;
@@ -35,8 +30,8 @@ let ffmpegLoading = null;
 
 // ─── capacidades ────────────────────────────────────────────────
 // Sólo el vídeo las necesita: ffmpeg.wasm multi-thread exige WebAssembly +
-// SharedArrayBuffer (que a su vez requiere cross-origin isolation, ver
-// coi-serviceworker.js). La imagen no pasa por aquí.
+// SharedArrayBuffer, que a su vez requiere cross-origin isolation — el worker
+// (src/index.ts) manda COOP/COEP en toda respuesta. La imagen no pasa por aquí.
 
 export function detectCapabilities() {
   const hasWASM = typeof WebAssembly !== 'undefined';
@@ -308,63 +303,4 @@ export function generateVideoThumb(file, opts = {}) {
     };
     v.onerror = () => finish(reject, new Error('video load error'));
   });
-}
-
-// ─── trim de audio (ffmpeg) ─────────────────────────────────────
-// Recorta una nota de voz a [start, start+duration]. Intenta primero COPIAR el
-// stream sin pérdida (-c:a copy): ffmpeg.wasm NO sabe ENCODEAR opus (issue #591)
-// pero sí copiarlo, así que una nota webm/ogg-opus se recorta sin recodificar —
-// cero pérdida y mismo peso por segundo. Si el contenedor no admite el copy
-// (mp3/m4a/wav, o si el copy descuadra), cae a re-encode libvorbis → ogg, el
-// mismo códec que ya usamos para el audio de los vídeos. Requiere ffmpeg (SAB),
-// igual que el vídeo; el caller sólo ofrece editar audio si hay capacidades.
-export async function trimAudio(file, trim, onProgress) {
-  await loadFFmpeg(onProgress);
-  onProgress?.({ phase: 'compressing', percent: 0, label: 'recortando audio' });
-
-  const ext = (file.name.split('.').pop() || 'webm').toLowerCase();
-  const inputName = `audio-in.${ext}`;
-  const buf = await file.arrayBuffer();
-
-  const progressHandler = ({ progress }) => {
-    const pct = Math.min(Math.round(progress * 100), 99);
-    onProgress?.({ phase: 'compressing', percent: pct, label: 'recortando audio' });
-  };
-
-  // Ejecuta un intento (copy o re-encode) y limpia el FS pase lo que pase.
-  const run = async (outName, codecArgs, type) => {
-    await ffmpeg.writeFile(inputName, new Uint8Array(buf));
-    ffmpeg.on('progress', progressHandler);
-    try {
-      const code = await ffmpeg.exec([
-        '-ss', String(trim.start),
-        '-i', inputName,
-        '-t', String(trim.duration),
-        '-vn',
-        ...codecArgs,
-        outName,
-      ]);
-      if (code !== 0) throw new Error(`ffmpeg exit ${code}`);
-      const data = await ffmpeg.readFile(outName);
-      return new Blob([data.buffer], { type });
-    } finally {
-      ffmpeg.off('progress', progressHandler);
-      await ffmpeg.deleteFile(inputName).catch(() => {});
-      await ffmpeg.deleteFile(outName).catch(() => {});
-    }
-  };
-
-  // El copy sólo vale si el contenedor de salida admite el códec de origen: para
-  // notas grabadas (webm/ogg) copiamos en el mismo contenedor; el resto va al
-  // re-encode directo.
-  if (ext === 'webm' || ext === 'ogg') {
-    try {
-      const blob = await run(`audio-out.${ext}`, ['-c:a', 'copy'], file.type || `audio/${ext}`);
-      return { blob, width: null, height: null };
-    } catch (e) {
-      console.warn('audio copy-trim falló, re-encode a ogg/vorbis', e);
-    }
-  }
-  const blob = await run('audio-out.ogg', ['-c:a', 'libvorbis', '-b:a', AUDIO_TRIM_BITRATE], 'audio/ogg');
-  return { blob, width: null, height: null };
 }

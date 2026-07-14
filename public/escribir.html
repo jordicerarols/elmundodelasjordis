@@ -11,7 +11,7 @@
   <nav class="page-nav" aria-label="secciones">
     <a class="linky" href="/">casa</a>
     <a class="linky" href="/editar">editar las jordis</a>
-    <form method="post" action="/api/logout" style="display:inline">
+    <form method="post" action="/api/logout">
       <button class="linky" type="submit">salir</button>
     </form>
   </nav>
@@ -48,6 +48,10 @@
     </div>
   </form>
 
+  <!-- UMD de @ffmpeg/ffmpeg (self-hosted): define window.FFmpegWASM, que
+       compressor-video.js necesita para comprimir vídeo. Su worker
+       (814.ffmpeg.js) debe ser same-origin, por eso no va por CDN. -->
+  <script src="/ffmpeg.js" defer></script>
   <script type="module" src="/js/composer.js"></script>
 </body>
 </html>

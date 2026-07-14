@@ -13,23 +13,31 @@ comprime en el navegador con ffmpeg.wasm antes de subirse.
 
 ## Cómo funciona
 
-- **`/`** — la home: título, lista de hashtags que filtran, y el feed con scroll
-  infinito.
-- **`/las-jordis`** — presentación: un cuadrado de color por "jordi".
+- **`/`** — la home: título a la izquierda con la lista de hashtags (en fila,
+  filtran el feed), y el feed a la derecha con scroll infinito. Cada post lleva
+  lugar y fecha arriba a la derecha; el lugar también filtra.
+- **`/las-jordis`** — presentación: un círculo de color por "jordi" con su nombre
+  dentro. Al activar uno, el fondo toma su color, su subtítulo sustituye al
+  titular y su texto aparece entre los círculos y "casa".
 - **`/escribir`** — (con contraseña) publicar: título, hashtags, contenido, lugar
   y fotos/vídeo.
-- **`/editar`** — (con contraseña) editar las jordis: nombre, color, texto y añadir.
-- **`/login.html`** — entrar con la contraseña de administradora.
+- **`/editar`** — (con contraseña) editar las jordis: nombre (el del círculo),
+  subtítulo (el titular al activar), color y texto; y añadir jordis nuevas.
+- **`/login`** — entrar con la contraseña de administradora.
 
 Al entrar con la contraseña, la web muestra los controles de edición in situ
 (enlaces a escribir/editar, y borrar/editar en cada publicación).
+
+**Backup:** `/api/export` (logueada) descarga un JSON con todo el contenido
+(posts, media, hashtags y jordis).
 
 ---
 
 ## Puesta en marcha (una sola vez, con Cloudflare)
 
-Necesitas Node 18+ y la cuenta de Cloudflare de la clienta. Estos pasos se hacen
-**una vez** desde tu ordenador (requieren `wrangler login` o el token, ver abajo).
+Necesitas **Node 22+** (wrangler 4.x lo exige) y la cuenta de Cloudflare de la
+clienta. Estos pasos se hacen **una vez** desde tu ordenador (requieren
+`wrangler login` o el token, ver abajo).
 
 ```bash
 npm install
@@ -53,9 +61,6 @@ npx wrangler secret put AUTH_SECRET   # un string largo aleatorio (firma la sesi
 npm run deploy
 ```
 
-> El feed **estrena vacío**: el contenido de la web antigua queda archivado en el
-> repo viejo `jordis` y NO se migra.
-
 ### Migraciones de esquema
 
 `schema.sql` es la fuente de verdad y es seguro re-aplicarlo (`CREATE ... IF NOT
@@ -63,14 +68,13 @@ EXISTS` + seeds guardados). Pero SQLite no tiene `ALTER TABLE` idempotente, así
 que **añadir columnas a tablas ya existentes** va en archivos aparte `migrate-*.sql`
 de **una sola ejecución**. Base nueva → sólo `db:migrate:remote`, no necesitas nada más.
 
-- **`subtitulo` en `jordis`** (nombre propio jordi/jordy/… ↔ faceta como subtítulo).
-  Sólo hace falta si tu D1 remota se creó con el esquema viejo (comprueba con
-  `PRAGMA table_info(jordis)` si falta la columna `subtitulo`):
+- **`subtitulo` en `jordis`** — ✅ ya aplicada en producción (14 jul 2026, desde
+  la consola D1 del dashboard). Sólo haría falta re-ejecutarla sobre una base
+  vieja reconstruida; comprueba con `PRAGMA table_info(jordis)`.
 
-  ```bash
-  npm run db:migrate:subtitulo:remote   # UNA vez; añade la columna y reubica datos
-  npm run db:migrate:remote             # opcional después: re-aplica schema (no-op)
-  ```
+> Ojo: la D1 remota vive en la cuenta de la clienta, y el token local puede no
+> tener permisos (`error 7403`). En ese caso las migraciones remotas se ejecutan
+> desde el navegador: dashboard → Storage & Databases → D1 → `jordis-db` → Console.
 
 ---
 
@@ -79,6 +83,15 @@ de **una sola ejecución**. Base nueva → sólo `db:migrate:remote`, no necesit
 Cada `push` a `main` despliega el Worker solo (workflow en
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)). Sólo hay que
 darle un token de Cloudflare **una vez**.
+
+Dos detalles del workflow que NO hay que perder (aprendidos a las malas):
+
+- **`wranglerVersion` fijado**: sin él, la action usa su wrangler embebido
+  (3.90.0), que ignora `assets.run_worker_first` → los assets se sirven SIN
+  pasar por el worker (sin cabeceras COOP/COEP → el compresor de vídeo muere,
+  y `/escribir`/`/editar` quedan sin puerta de login). Mantenerlo en línea con
+  la versión de `package-lock.json`.
+- **Node 22** en `setup-node`: wrangler 4.x no arranca con Node 20.
 
 ### Crear el `CLOUDFLARE_API_TOKEN` (pensado para hacerlo con la clienta delante)
 
@@ -93,9 +106,6 @@ darle un token de Cloudflare **una vez**.
    | Account | Workers R2 Storage | Edit |
    | Account | Account Settings | Read |
 
-   (Para el cambio de dominio del último paso hará falta añadir, sólo entonces:
-   *Zone · Workers Routes · Edit* y *Zone · DNS · Edit* sobre la zona
-   `elmundodelasjordis.com`.)
 3. En **Account Resources** elige la cuenta de la clienta. **Continue to summary →
    Create Token**. Copia el token (se muestra una sola vez).
 4. En GitHub, en el repo (`github.com/jordicerarols/…`): **Settings → Secrets and
@@ -111,21 +121,15 @@ lanzar a mano desde la pestaña **Actions → deploy → Run workflow**.
 
 ---
 
-## Cambio de dominio final (último paso, manual y reversible)
+## Dominio
 
-Hoy `elmundodelasjordis.com` apunta a **GitHub Pages** (la web vieja), que se queda
-como *fallback* durante la transición. Cuando la web nueva esté lista:
+El Worker sirve `elmundodelasjordis.com` y `www` como **custom domains**
+(bloque `routes` de [`wrangler.toml`](wrangler.toml)); el cutover desde GitHub
+Pages se ejecutó el 7 jul 2026 y la web vieja sigue intacta en su repo.
 
-1. En [`wrangler.toml`](wrangler.toml), **descomenta** el bloque `routes` con
-   `pattern = "elmundodelasjordis.com"` y haz `push` (o `npm run deploy`).
-2. En el dashboard de Cloudflare: **Workers & Pages → jordis → Settings → Domains
-   & Routes → Add → Custom domain →** `elmundodelasjordis.com`. Cloudflare crea el
-   registro DNS que apunta al Worker.
-3. Retira el apuntado a GitHub Pages (el registro DNS antiguo hacia
-   `jordicerarols.github.io`).
-
-**Para revertir:** quita el custom domain del Worker (o vuelve a comentar `routes`)
-y restaura el DNS hacia GitHub Pages. La web vieja sigue intacta en su repo.
+**Para revertir:** quita el custom domain del Worker (dashboard → Workers →
+jordis → Settings → Domains & Routes, o comenta `routes` y push) y restaura el
+DNS hacia `jordicerarols.github.io`.
 
 ---
 
@@ -143,15 +147,17 @@ npm run dev                        # http://localhost:8787
 
 La D1 y el R2 locales viven en `.wrangler/` y se crean solos. El compresor de
 vídeo (ffmpeg.wasm) necesita `SharedArrayBuffer`, que la web habilita con las
-cabeceras COOP/COEP `require-corp` en cada respuesta (ya configurado en
-`src/index.ts`); las fuentes van **self-hosted** en `public/fonts/` para no chocar
-con esa política.
+cabeceras COOP/COEP `require-corp` en cada respuesta (middleware en
+`src/index.ts`); las fuentes van **self-hosted** en `public/fonts/` para no
+chocar con esa política, y el runtime UMD de ffmpeg (`public/ffmpeg.js` + su
+worker `814.ffmpeg.js`) también, porque su worker debe ser same-origin.
 
 ## Estructura
 
 ```
 src/
   index.ts     rutas Hono: auth, posts CRUD, jordis CRUD, upload, /r2, export
+               + middleware COOP/COEP (cross-origin isolation para ffmpeg.wasm)
   auth.ts      cookie de sesión firmada (HMAC) + requireAuth
   db.ts        queries D1 (posts, media, hashtags, jordis)
   media.ts     validación/clasificación de uploads (imagen + vídeo)
@@ -159,13 +165,22 @@ src/
 public/
   index.html / las-jordis.html / escribir.html / editar.html / login.html
   style.css    estilos (un solo archivo) + fonts/ (woff2 self-hosted)
-  js/          módulos ES: feed, render, composer, jordis-view, jordis-edit,
-               api, auth, utils, state, y el pipeline de compresión reusado
-               (compressor*, editor-geom) + glue de ffmpeg (ffmpeg.js, 814.ffmpeg.js)
+  ffmpeg.js    runtime UMD de @ffmpeg/ffmpeg (self-hosted) + 814.ffmpeg.js (su worker)
+  js/
+    page-welcome.js  entry de la home (filtros + tinte de fondo)
+    feed.js          fetch paginado + scroll infinito
+    render.js        tarjeta de post (título, lugar·fecha, media, tags)
+    composer.js      página escribir (adjuntos + submit)
+    jordis-view.js   página las jordis (círculos + activación)
+    jordis-edit.js   página editar las jordis (CRUD)
+    compressor*.js   compresión cliente (imagen → WebP wasm; vídeo → VP8 ffmpeg.wasm)
+    editor-geom.js   helpers matemáticos puros de la compresión
+    api.js / auth.js / state.js / utils.js
 schema.sql     esquema único (tablas + seed de las 4 jordis)
 migrate-*.sql  migraciones puntuales (run once) para D1 ya existentes
 ```
 
 El motor se adaptó de [`twoitter`](https://github.com/meowrhino) (mismo autor):
 se reutilizó auth, posts, hashtags, subida de media y compresión de vídeo, y se
-quitaron encuestas, notas de voz/transcripción y geolocalización.
+quitaron encuestas, notas de voz/transcripción, geolocalización y el editor de
+recorte/trim de medios.

@@ -13,10 +13,9 @@
 //
 // Carga del WASM (la parte delicada):
 //   - Importamos el módulo glue desde jsDelivr, NO esm.sh: jsDelivr manda el
-//     header Cross-Origin-Resource-Policy: cross-origin, necesario porque el
-//     coi-serviceworker pone COEP: require-corp en navegadores sin
-//     'credentialless' (Safari/WebKit = el iPhone). esm.sh no lo manda → ahí
-//     fallaría justo en iOS.
+//     header Cross-Origin-Resource-Policy: cross-origin, necesario porque la
+//     web sirve COEP: require-corp en toda respuesta (src/index.ts, por el
+//     compresor de vídeo). esm.sh no lo manda → el import fallaría.
 //   - Pero el bundle +esm no resuelve la ruta de su propio .wasm. Así que lo
 //     hacemos a mano (igual que ffmpeg.wasm): fetch del .wasm + WebAssembly.
 //     compile + init(module). Controlar la URL del .wasm es lo que hace que
@@ -86,10 +85,8 @@ function loadWebpEncoder() {
 }
 
 // Decodifica un File a ImageBitmap respetando la orientación EXIF ('from-image'),
-// con fallback a decode plano en navegadores sin esa opción. Compartido con el
-// editor (editor.js) para que ambos vivan en EL MISMO espacio de píxeles — si
-// divergieran, la caja de recorte se desalinearía respecto al output. Lanza si falla.
-export async function decodeOrientedBitmap(file) {
+// con fallback a decode plano en navegadores sin esa opción. Lanza si falla.
+async function decodeOrientedBitmap(file) {
   try {
     return await createImageBitmap(file, { imageOrientation: 'from-image' });
   } catch (_) {

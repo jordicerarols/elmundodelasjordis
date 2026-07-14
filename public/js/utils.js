@@ -13,16 +13,6 @@ export function el(tag, { class: cls, text, attrs } = {}) {
   return node;
 }
 
-// Escapa para los pocos sitios donde sí se compone HTML controlado.
-export function escapeHtml(s) {
-  return String(s ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
 // Tipo de media de un File según su MIME ('image' | 'video' | null).
 export function mediaKindOf(file) {
   const t = file?.type || '';

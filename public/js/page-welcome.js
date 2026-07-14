@@ -92,11 +92,8 @@ async function loadHashtags() {
     ...data.filter((h) => !isJordi(h.tag)),
     ...data.filter((h) => isJordi(h.tag)),
   ];
-  let firstJordi = true;
   for (const { tag, count } of ordered) {
     const li = el('li');
-    // Un pequeño respiro visual antes del primer tag de jordi (grupo de abajo).
-    if (isJordi(tag) && firstJordi) { li.classList.add('jordi-group-start'); firstJordi = false; }
     const b = el('button', { class: 'hashtag-filter', attrs: { type: 'button', 'data-tag': tag } });
     b.appendChild(document.createTextNode(`#${tag} `));
     b.appendChild(el('span', { class: 'count', text: String(count) }));

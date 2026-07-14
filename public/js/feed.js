@@ -61,11 +61,6 @@ export function createFeed({ container, sentinel, buildPostOpts }) {
     loadMore();
   }
 
-  // Compat: filtrar sólo por hashtag.
-  function setTag(next) {
-    setFilter({ tag: next });
-  }
-
   function start(initial = {}) {
     tag = initial.tag || null;
     location = initial.location || null;
@@ -82,7 +77,6 @@ export function createFeed({ container, sentinel, buildPostOpts }) {
   return {
     start,
     setFilter,
-    setTag,
     get tag() { return tag; },
     get location() { return location; },
   };
