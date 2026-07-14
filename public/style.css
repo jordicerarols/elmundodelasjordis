@@ -254,13 +254,29 @@ a { color: inherit; }
   margin-bottom: clamp(20px, 4vw, 48px);
 }
 
-/* --- las jordis: cuadrados de color --- */
-.jordis-intro {
+/* --- las jordis: círculos de color --- */
+/* La página es una columna a pantalla completa: título a la izquierda,
+   subtítulo-titular centrado (hueco reservado), círculos, texto y "casa"
+   ancladas abajo. */
+.jordis-page {
+  display: flex;
+  flex-direction: column;
+}
+.jordis-title {
+  font-size: clamp(36px, 6vw, 90px);
+  text-align: left;
+}
+/* El subtítulo de la jordi activa ocupa el lugar (y el tamaño) del antiguo
+   título. min-height reserva el hueco cuando no hay ninguna activa para que
+   los círculos no salten al activar/desactivar. */
+.jordi-hero {
+  font-family: "Island Moments", cursive;
+  font-weight: 400;
+  font-size: clamp(40px, 9vw, 130px);
+  line-height: 0.95;
   text-align: center;
-  font-size: var(--p-size);
-  font-style: italic;
-  max-width: 60ch;
-  margin: 0 auto clamp(28px, 5vw, 64px);
+  margin: clamp(10px, 3vw, 40px) 0 clamp(24px, 5vw, 64px);
+  min-height: 1em;
 }
 .jordis-squares {
   display: flex;
@@ -269,41 +285,42 @@ a { color: inherit; }
   gap: clamp(20px, 4vw, 56px);
 }
 .jordi-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  /* El card mide lo que el cuadrado para que el texto envuelva bajo él y los
-     gaps del contenedor no se los coma el desbordamiento del cuadrado. */
   width: clamp(140px, 18vw, 240px);
 }
+/* El círculo es el propio <button> y lleva el nombre dentro: blanco cuando
+   está desactivada, negro cuando está activa (el círculo pasa a blanco sobre
+   el fondo teñido). Sin borde. */
 .jordi-square {
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 2px;
-  /* Es un <button>: quitamos el chrome por defecto. */
-  padding: 0;
-  border: 1px solid transparent;
+  border-radius: 50%;
+  padding: 8%;
+  border: none;
   cursor: pointer;
-  transition: background-color 0.25s ease, border-color 0.25s ease;
-}
-.jordi-nombre {
+  display: grid;
+  place-items: center;
   font-family: "Island Moments", cursive;
   font-size: var(--label-size);
-}
-.jordi-subtitulo {
-  font-size: var(--p-size);
-  font-style: italic;
-  line-height: 1.5;
-  text-align: center;
+  color: #fff;
   overflow-wrap: anywhere;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
-
-/* Jordi activa: su cuadrado se pone en blanco (con un borde tenue para que se
-   distinga del fondo tintado del color de esa jordi). */
 .jordi-card.is-active .jordi-square {
   background-color: #fff !important;
-  border-color: rgba(0, 0, 0, 0.15);
+  color: var(--color-text);
+}
+/* Nada de anillo de foco tras el click; sólo al navegar con teclado. */
+.jordi-square:focus { outline: none; }
+.jordi-square:focus-visible {
+  outline: 2px dashed rgba(0, 0, 0, 0.35);
+  outline-offset: 4px;
+}
+
+/* "casa" (y "editar las jordis" logueada) al fondo de la página, centrado. */
+.jordis-nav {
+  margin-top: auto;
+  margin-bottom: 0;
+  padding-top: clamp(24px, 5vw, 64px);
 }
 
 /* El fondo de la página lo pinta el color de la jordi activa (inline style en
@@ -326,20 +343,12 @@ body.tag-tinted .hashtag-jordi {
   text-shadow: 0 0 1px rgba(0, 0, 0, 0.55), 0 0 3px rgba(0, 0, 0, 0.35);
 }
 
-/* Contenido de la jordi activa, bajo la rejilla. */
+/* Contenido (sólo el texto) de la jordi activa, bajo los círculos. El nombre
+   vive en el círculo y el subtítulo en el titular (.jordi-hero). */
 .jordi-content {
   max-width: 60ch;
   margin: clamp(28px, 5vw, 64px) auto 0;
   text-align: center;
-}
-.jordi-content-nombre {
-  font-family: "Island Moments", cursive;
-  font-size: clamp(32px, 6vw, 72px);
-}
-.jordi-content-subtitulo {
-  font-size: var(--p-size);
-  font-style: italic;
-  margin-bottom: clamp(14px, 3vw, 28px);
 }
 .jordi-content-texto {
   font-size: var(--p-size);
