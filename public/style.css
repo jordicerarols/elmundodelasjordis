@@ -206,11 +206,19 @@ a { color: inherit; }
 .post-media {
   display: flex;
   flex-direction: column;
+  /* flex-start: sin él, el stretch por defecto fuerza el ancho completo en
+     los hijos y deforma la proporción cuando actúa el max-height. */
+  align-items: flex-start;
   gap: 10px;
   margin-top: clamp(10px, 1.5vw, 18px);
 }
+/* Tope de altura para que un medio vertical no ocupe pantallas enteras ahora
+   que el feed va a todo lo ancho: cada foto/vídeo cabe en un golpe de vista
+   (~2/3 del viewport) y conserva su proporción. */
 .post-img, .post-video {
   max-width: 100%;
+  max-height: min(65vh, 640px);
+  width: auto;
   height: auto;
   display: block;
   border-radius: 2px;

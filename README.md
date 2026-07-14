@@ -143,6 +143,7 @@ cp .dev.vars.example .dev.vars     # y edita PASSWORD / AUTH_SECRET
 
 npm run db:migrate                 # aplica schema.sql a la D1 LOCAL (.wrangler/)
 npm run dev                        # http://localhost:8787
+npm test                           # tests unitarios (vitest) — también corren en CI
 ```
 
 La D1 y el R2 locales viven en `.wrangler/` y se crean solos. El compresor de
@@ -176,6 +177,9 @@ public/
     compressor*.js   compresión cliente (imagen → WebP wasm; vídeo → VP8 ffmpeg.wasm)
     editor-geom.js   helpers matemáticos puros de la compresión
     api.js / auth.js / state.js / utils.js
+test/          tests unitarios (vitest) de las funciones puras: compresor de
+               vídeo (args de ffmpeg, "gana el más pequeño"), hashtags, auth
+               (token HMAC) y validación de posts
 schema.sql     esquema único (tablas + seed de las 4 jordis)
 migrate-*.sql  migraciones puntuales (run once) para D1 ya existentes
 ```
