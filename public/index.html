@@ -11,12 +11,15 @@
   <div class="welcome-grid">
     <div class="welcome-left">
       <div class="welcome-top">
-        <h1 class="site-title">el mundo de <a class="h1-link" href="/las-jordis">las jordis</a></h1>
+        <h1 class="site-title"><span class="site-title-line">el mundo de</span> <a class="h1-link site-title-line" href="/las-jordis">las jordis</a></h1>
         <nav class="welcome-actions" aria-label="acciones">
           <a class="linky" href="/escribir" data-authed-only hidden>escribir</a>
           <a class="linky" href="/editar" data-authed-only hidden>editar las jordis</a>
           <a class="linky" href="/login" data-anon-only>entrar</a>
-          <form method="post" action="/api/logout" data-authed-only hidden style="display:inline">
+          <!-- Sin style inline: un display explícito ganaría al atributo hidden
+               y "salir" se vería también sin login. Como .welcome-actions es
+               flex, el form ya se comporta como item inline. -->
+          <form method="post" action="/api/logout" data-authed-only hidden>
             <button class="linky" type="submit">salir</button>
           </form>
         </nav>

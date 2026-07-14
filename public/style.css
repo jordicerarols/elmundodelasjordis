@@ -20,6 +20,7 @@
   --p-size: clamp(16px, 1.25vw, 20px);
   --nav-size: clamp(20px, 2.6vw, 30px);
   --label-size: clamp(22px, 2.4vw, 34px);
+  --tag-size: clamp(18px, 1.8vw, 26px);
 
   --gap-x: clamp(28px, 5vw, 80px);
   --gap-y: clamp(24px, 5vw, 72px);
@@ -28,8 +29,11 @@
 
 * { box-sizing: border-box; }
 
-html, body {
-  margin: 0;
+/* El fondo vive SOLO en body: si html tuviera el suyo, el tinte de jordi
+   (inline en body) no se propagaría al canvas y asomaría una franja blanca
+   al hacer scroll u overscroll. */
+html, body { margin: 0; }
+body {
   background: var(--color-bg);
   color: var(--color-text);
 }
@@ -102,11 +106,16 @@ a { color: inherit; }
   padding: var(--nav-offset);
 }
 
+/* El título son SIEMPRE dos líneas: "el mundo de" / "las jordis". Cada línea
+   es un bloque sin wrap; el tamaño (--h1-size) se calibra para que "el mundo
+   de" (la línea larga) quepa en la columna izquierda sin partirse. */
 .site-title {
   font-size: var(--h1-size);
-  max-width: 10ch;
 }
-.site-title .h1-link { display: inline; }
+.site-title-line {
+  display: block;
+  white-space: nowrap;
+}
 
 .welcome-actions {
   display: flex;
@@ -117,13 +126,14 @@ a { color: inherit; }
   font-size: var(--nav-size);
 }
 
-/* Lista de hashtags (abajo-izquierda) */
+/* Lista de hashtags (abajo-izquierda). Más discreta que los labels: es un
+   índice, no un titular. */
 .hashtag-list {
   display: flex;
   flex-direction: column;
   gap: clamp(4px, 1vw, 10px);
   font-family: "Island Moments", cursive;
-  font-size: var(--label-size);
+  font-size: var(--tag-size);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -146,7 +156,13 @@ a { color: inherit; }
 .welcome-right {
   padding: var(--nav-offset);
   min-width: 0;
+  /* El feed se arrima al borde derecho (donde vive el scroll) y el hueco
+     sobrante de la columna queda ENTRE las dos columnas, no junto al scroll. */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
+.welcome-right .feed { width: min(60ch, 100%); }
 
 /* ------------------------------ 3) FEED ---------------------------------- */
 .feed {
@@ -516,6 +532,7 @@ body.tag-tinted .hashtag-jordi {
     --p-size: clamp(17px, 4.5vw, 21px);
     --nav-size: clamp(22px, 6vw, 34px);
     --label-size: clamp(24px, 6vw, 36px);
+    --tag-size: clamp(19px, 5vw, 28px);
     --nav-offset: clamp(16px, 5vw, 28px);
   }
   .welcome-grid { grid-template-columns: 1fr; }
@@ -524,7 +541,6 @@ body.tag-tinted .hashtag-jordi {
     height: auto;
     display: block;
   }
-  .site-title { max-width: none; }
   .hashtag-list {
     flex-direction: row;
     flex-wrap: wrap;
@@ -532,6 +548,8 @@ body.tag-tinted .hashtag-jordi {
     max-height: none;
     margin-top: clamp(18px, 5vw, 32px);
   }
+  /* En fila (móvil) el respiro vertical del grupo jordi descuadra la línea. */
+  .hashtag-list .jordi-group-start { margin-top: 0; }
   .welcome-right { padding-top: clamp(20px, 6vw, 36px); }
   .jordi-row {
     grid-template-columns: 1fr;

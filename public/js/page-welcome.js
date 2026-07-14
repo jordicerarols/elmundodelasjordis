@@ -99,7 +99,7 @@ async function loadHashtags() {
     if (isJordi(tag) && firstJordi) { li.classList.add('jordi-group-start'); firstJordi = false; }
     const b = el('button', { class: 'hashtag-filter', attrs: { type: 'button', 'data-tag': tag } });
     b.appendChild(document.createTextNode(`#${tag} `));
-    b.appendChild(el('span', { class: 'count', text: `(${count})` }));
+    b.appendChild(el('span', { class: 'count', text: String(count) }));
     tintHashtag(b, tag);
     b.addEventListener('click', () => applyTag(tag));
     li.appendChild(b);

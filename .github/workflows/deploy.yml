@@ -28,3 +28,10 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy
+          # OJO: sin esto, wrangler-action usa su wrangler embebido (3.90.0),
+          # que NO entiende `assets.run_worker_first` y lo descarta con un
+          # warning → producción servía los assets SIN pasar por el worker
+          # (sin COOP/COEP → sin compresor de vídeo; /escribir y /editar sin
+          # auth; 405 en POST a rutas con asset homónimo). Mantener en línea
+          # con la versión de package-lock.json.
+          wranglerVersion: "4.107.0"
