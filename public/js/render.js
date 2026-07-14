@@ -43,6 +43,15 @@ function appendBodyWithHashtags(container, text) {
   }
 }
 
+// "14 de julio de 2026, 18:32" — día mes año y hora, en local del visitante.
+function formatFecha(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return '';
+  const fecha = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+  const hora = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  return `${fecha}, ${hora}`;
+}
+
 function renderMedia(media) {
   const wrap = el('div', { class: 'post-media' });
   for (const m of media) {
@@ -69,9 +78,32 @@ function renderMedia(media) {
 export function renderPost(post, opts = {}) {
   const art = el('article', { class: 'post', attrs: { 'data-id': String(post.id) } });
 
+  // Cabecera: título a la izquierda; lugar + fecha arriba a la derecha.
+  const head = el('header', { class: 'post-head' });
   if (post.titulo) {
-    art.appendChild(el('h2', { class: 'post-titulo', text: post.titulo }));
+    head.appendChild(el('h2', { class: 'post-titulo', text: post.titulo }));
   }
+  const meta = el('span', { class: 'post-meta' });
+  if (post.location) {
+    // Botón: al tocarlo se filtra el feed por esa ubicación (delegado en la home).
+    meta.appendChild(el('button', {
+      class: 'post-lugar',
+      text: post.location,
+      attrs: { type: 'button', 'data-loc': post.location },
+    }));
+  }
+  const fecha = formatFecha(post.created_at);
+  if (fecha) {
+    if (post.location) meta.appendChild(document.createTextNode(' · '));
+    meta.appendChild(el('time', {
+      class: 'post-fecha',
+      text: fecha,
+      attrs: { datetime: post.created_at },
+    }));
+  }
+  if (meta.childNodes.length) head.appendChild(meta);
+  if (head.childNodes.length) art.appendChild(head);
+
   if (post.text) {
     const body = el('div', { class: 'post-body' });
     appendBodyWithHashtags(body, post.text);
@@ -82,14 +114,6 @@ export function renderPost(post, opts = {}) {
   }
 
   const foot = el('footer', { class: 'post-foot' });
-  if (post.location) {
-    // Botón: al tocarlo se filtra el feed por esa ubicación (delegado en la home).
-    foot.appendChild(el('button', {
-      class: 'post-lugar',
-      text: post.location,
-      attrs: { type: 'button', 'data-loc': post.location },
-    }));
-  }
   // Hashtags del post (los del campo dedicado + los del cuerpo) como chips.
   if (post.hashtags?.length) {
     const tags = el('span', { class: 'post-tags' });

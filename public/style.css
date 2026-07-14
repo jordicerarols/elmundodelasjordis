@@ -172,10 +172,31 @@ a { color: inherit; }
 }
 
 .post { max-width: none; }
+/* Cabecera del post: título a la izquierda, lugar + fecha arriba a la
+   derecha (en la misma línea base; en pantallas estrechas la meta salta
+   debajo del título). */
+.post-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px clamp(12px, 2vw, 28px);
+  margin-bottom: 0.35em;
+}
 .post-titulo {
   font-size: clamp(28px, 3.4vw, 52px);
-  margin-bottom: 0.25em;
+  margin-bottom: 0;
 }
+.post-meta {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4em;
+  white-space: nowrap;
+  font-family: "Island Moments", cursive;
+  font-size: clamp(16px, 1.6vw, 22px);
+}
+.post-fecha { color: var(--color-muted); }
 .post-body {
   font-size: var(--p-size);
   line-height: 1.5;
@@ -204,14 +225,14 @@ a { color: inherit; }
   font-size: clamp(18px, 1.8vw, 24px);
   color: var(--color-text);
 }
-/* La ubicación es un <button> que filtra el feed: se ve como texto, clicable. */
+/* La ubicación es un <button> que filtra el feed: se ve como texto, clicable.
+   Vive en la cabecera del post (arriba a la derecha, junto a la fecha). */
 .post-lugar {
   background: none; border: none; padding: 0; margin: 0;
   font: inherit; color: inherit; cursor: pointer;
   transition: color 0.3s ease;
 }
 .post-lugar:hover, .post-lugar:focus-visible { color: var(--color-muted); outline: none; }
-.post-lugar::before { content: "· "; color: var(--color-muted); }
 .post-tags { display: inline-flex; flex-wrap: wrap; gap: 0.5em; }
 .post-controls { display: inline-flex; gap: 0.6em; margin-left: auto; }
 .post-controls .linky { font-size: clamp(16px, 1.6vw, 22px); }
@@ -332,7 +353,7 @@ body.tag-tinted .hashtag-jordi {
 }
 
 /* Contenido (sólo el texto) de la jordi activa, bajo los círculos. El nombre
-   vive en el círculo y el subtítulo en el titular (.jordi-hero). */
+   vive en el círculo y el subtítulo sustituye al titular (.jordis-title). */
 .jordi-content {
   max-width: 60ch;
   margin: clamp(28px, 5vw, 64px) auto 0;
