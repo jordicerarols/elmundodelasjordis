@@ -172,15 +172,9 @@ a { color: inherit; }
 }
 
 .post { max-width: none; }
-/* Cabecera del post: título a la izquierda, lugar + fecha arriba a la
-   derecha (en la misma línea base; en pantallas estrechas la meta salta
-   debajo del título). */
+/* Cabecera del post: título arriba y, justo debajo, lugar · fecha
+   alineados a la izquierda. */
 .post-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 2px clamp(12px, 2vw, 28px);
   margin-bottom: 0.35em;
 }
 .post-titulo {
@@ -188,11 +182,11 @@ a { color: inherit; }
   margin-bottom: 0;
 }
 .post-meta {
-  margin-left: auto;
-  display: inline-flex;
+  display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   gap: 0.4em;
-  white-space: nowrap;
+  margin-top: 0.15em;
   font-family: "Island Moments", cursive;
   font-size: clamp(16px, 1.6vw, 22px);
 }
