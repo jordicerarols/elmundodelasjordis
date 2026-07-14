@@ -266,25 +266,13 @@ a { color: inherit; }
   font-size: clamp(36px, 6vw, 90px);
   text-align: center;
 }
-/* El subtítulo de la jordi activa ocupa el lugar (y el tamaño) del antiguo
-   título. min-height reserva el hueco cuando no hay ninguna activa para que
-   los círculos no salten al activar/desactivar. */
-.jordi-hero {
-  font-family: "Island Moments", cursive;
-  font-weight: 400;
-  font-size: clamp(40px, 9vw, 130px);
-  line-height: 0.95;
-  text-align: center;
-  margin: clamp(10px, 3vw, 40px) 0 clamp(24px, 5vw, 64px);
-  min-height: 1em;
-}
 .jordis-squares {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: clamp(20px, 4vw, 56px);
-  /* Empuja los círculos (y lo que viene detrás: texto y casa) hacia abajo,
-     dejando el aire en el centro de la página. */
+  /* Con margin-top auto aquí Y en .jordis-nav, el aire libre se reparte a
+     partes iguales: círculos+texto quedan centrados entre título y casa. */
   margin-top: auto;
 }
 .jordi-card {
@@ -312,16 +300,13 @@ a { color: inherit; }
   background-color: #fff !important;
   color: var(--color-text);
 }
-/* Nada de anillo de foco tras el click; sólo al navegar con teclado. */
-.jordi-square:focus { outline: none; }
-.jordi-square:focus-visible {
-  outline: 2px dashed rgba(0, 0, 0, 0.35);
-  outline-offset: 4px;
-}
+/* Sin anillo de foco: el estado activo (círculo en blanco + fondo teñido) ya
+   es el feedback. Brave/Chromium pintaba el punteado incluso al hacer click. */
+.jordi-square:focus, .jordi-square:focus-visible { outline: none; }
 
-/* "casa" (y "editar las jordis" logueada) al fondo de la página, centrado.
-   El empujón hacia abajo lo da .jordis-squares (margin-top auto). */
+/* "casa" (y "editar las jordis" logueada) SIEMPRE al fondo, centrado. */
 .jordis-nav {
+  margin-top: auto;
   margin-bottom: 0;
   padding-top: clamp(24px, 5vw, 64px);
 }

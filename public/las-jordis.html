@@ -8,11 +8,9 @@
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body class="page jordis-page">
-  <h1 class="jordis-title">las jordis</h1>
-  <!-- El subtítulo de la jordi activa ocupa el lugar del antiguo título
-       (grande, centrado). Vacío cuando no hay ninguna activa; el min-height
-       en CSS reserva el hueco para que los círculos no salten. -->
-  <p class="jordi-hero" id="jordiHero" aria-live="polite"></p>
+  <!-- Titular único: "las jordis" en reposo; el subtítulo de la jordi activa
+       lo SUSTITUYE en este mismo sitio (lo cambia jordis-view.js). -->
+  <h1 class="jordis-title" id="jordisTitle" aria-live="polite">las jordis</h1>
   <div class="jordis-squares" id="jordisSquares"></div>
   <div class="jordi-content" id="jordiContent" hidden></div>
   <nav class="page-nav jordis-nav" aria-label="secciones">
