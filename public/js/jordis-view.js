@@ -43,8 +43,9 @@ function activate(j, card) {
   if (isHexColor(j.color)) document.body.style.backgroundColor = j.color;
   for (const c of wrap.querySelectorAll('.jordi-card')) c.classList.remove('is-active');
   card.classList.add('is-active');
-  // El subtítulo pasa al titular (fallback al nombre si no tiene).
-  heroEl.textContent = j.subtitulo || j.nombre;
+  // El subtítulo pasa al titular. SIN fallback al nombre: el nombre ya vive
+  // dentro del círculo y quedaría repetido; sin subtítulo no se muestra nada.
+  heroEl.textContent = j.subtitulo || '';
   playEnter(heroEl, 'jordi-content-enter');
   contentEl.replaceChildren();
   contentEl.appendChild(el('div', {
