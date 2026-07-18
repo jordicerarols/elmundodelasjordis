@@ -8,6 +8,7 @@
 import { api } from './api.js';
 import { $, el, isHexColor } from './utils.js';
 import { checkAuth } from './auth.js';
+import { appendTextWithHashtags } from './render.js';
 
 const SITE_TITLE = 'las jordis';
 
@@ -50,10 +51,13 @@ function activate(j, card) {
   titleEl.textContent = j.subtitulo || SITE_TITLE;
   playEnter(titleEl, 'jordi-content-enter');
   contentEl.replaceChildren();
-  contentEl.appendChild(el('div', {
-    class: 'jordi-content-texto',
-    text: j.texto || 'todavía no hay contenido…',
-  }));
+  const texto = el('div', { class: 'jordi-content-texto' });
+  // Los #tags del texto son enlaces a la home filtrada (/?tag=…). Aquí no hay
+  // delegación de click: navegan de verdad, que es lo que queremos al salir de
+  // esta página. Sin texto, un placeholder plano (no tiene tags que linkificar).
+  if (j.texto) appendTextWithHashtags(texto, j.texto);
+  else texto.textContent = 'todavía no hay contenido…';
+  contentEl.appendChild(texto);
   contentEl.hidden = false;
   playEnter(contentEl, 'jordi-content-enter');
 }
@@ -77,5 +81,8 @@ function renderJordi(j) {
     wrap.appendChild(el('p', { class: 'feed-empty', text: 'todavía no hay jordis…' }));
     return;
   }
+  // OJO: aquí NO se rellena JORDI_COLORS (sí se hace en la home). El fondo de
+  // esta página ES el color de la jordi activa, así que teñir un #tag con ese
+  // mismo pastel lo vuelve ilegible. Los tags van en tinta normal y se leen.
   for (const j of data) wrap.appendChild(renderJordi(j));
 })();

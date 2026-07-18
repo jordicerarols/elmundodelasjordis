@@ -19,9 +19,10 @@ export function tintHashtag(a, tag) {
 
 // Inserta texto detectando #hashtags y convirtiéndolos en enlaces, sin construir
 // HTML: alterna nodos de texto y <a> (data-tag) creados con textContent.
-// Preserva saltos de línea con white-space:pre-wrap en el CSS. Se usa tanto para
-// el cuerpo como para el título (los #tags son clicables en ambos).
-function appendTextWithHashtags(container, text) {
+// Preserva saltos de línea con white-space:pre-wrap en el CSS. Se usa para el
+// cuerpo y el título de un post, y para el texto de una jordi (los #tags son
+// clicables en los tres sitios).
+export function appendTextWithHashtags(container, text) {
   const re = /#([\p{L}\p{N}_]+)/gu;
   let last = 0;
   let m;
