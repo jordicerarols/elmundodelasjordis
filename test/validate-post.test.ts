@@ -14,6 +14,12 @@ describe("validatePostBody", () => {
     if (v.ok) expect(v.tags.sort()).toEqual(["playa", "verano"]);
   });
 
+  it("también recoge los #tags embebidos en el título", () => {
+    const v = validatePostBody({ titulo: "Verano en la #playa", text: "sin tags" });
+    expect(v.ok).toBe(true);
+    if (v.ok) expect(v.tags).toEqual(["playa"]);
+  });
+
   it("trunca titulo/location a sus topes y convierte vacíos en null", () => {
     const v = validatePostBody({ titulo: "x".repeat(500), text: "hola", location: "  " });
     expect(v.ok).toBe(true);

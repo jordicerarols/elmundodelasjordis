@@ -14,6 +14,8 @@
     "db:migrate:remote": "wrangler d1 execute jordis-db --remote --file=schema.sql",
     "db:migrate:subtitulo": "wrangler d1 execute jordis-db --local --file=migrate-add-subtitulo.sql",
     "db:migrate:subtitulo:remote": "wrangler d1 execute jordis-db --remote --file=migrate-add-subtitulo.sql",
+    "db:backfill-hashtags": "node scripts/backfill-hashtags.mjs --local",
+    "db:backfill-hashtags:remote": "node scripts/backfill-hashtags.mjs --remote",
     "r2:create": "wrangler r2 bucket create jordis-storage"
   },
   "dependencies": {

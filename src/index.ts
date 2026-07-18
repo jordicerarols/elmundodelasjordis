@@ -221,7 +221,7 @@ type PostValidation =
     };
 
 // Valida y sanea el body de un post. Los #tags salen del campo dedicado
-// `hashtags` MÁS los embebidos en el cuerpo. Exportada para tests futuros.
+// `hashtags` MÁS los embebidos en el título y en el cuerpo. Exportada para tests.
 export function validatePostBody(body: PostBody): PostValidation {
   const titulo = (body.titulo ?? "").trim().slice(0, TITULO_MAX_LEN) || null;
   const text = (body.text ?? "").trim() || null;
@@ -251,7 +251,11 @@ export function validatePostBody(body: PostBody): PostValidation {
   }
 
   const tags = [
-    ...new Set([...parseHashtagsField(body.hashtags), ...extractHashtags(text)]),
+    ...new Set([
+      ...parseHashtagsField(body.hashtags),
+      ...extractHashtags(titulo),
+      ...extractHashtags(text),
+    ]),
   ];
 
   return { ok: true, titulo, text, location, tags, media };
