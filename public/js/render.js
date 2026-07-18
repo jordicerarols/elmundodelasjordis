@@ -17,10 +17,11 @@ export function tintHashtag(a, tag) {
   }
 }
 
-// Inserta el cuerpo de texto detectando #hashtags y convirtiéndolos en enlaces,
-// sin construir HTML: alterna nodos de texto y <a> (data-tag) creados con
-// textContent. Preserva saltos de línea con white-space:pre-wrap en el CSS.
-function appendBodyWithHashtags(container, text) {
+// Inserta texto detectando #hashtags y convirtiéndolos en enlaces, sin construir
+// HTML: alterna nodos de texto y <a> (data-tag) creados con textContent.
+// Preserva saltos de línea con white-space:pre-wrap en el CSS. Se usa tanto para
+// el cuerpo como para el título (los #tags son clicables en ambos).
+function appendTextWithHashtags(container, text) {
   const re = /#([\p{L}\p{N}_]+)/gu;
   let last = 0;
   let m;
@@ -81,7 +82,9 @@ export function renderPost(post, opts = {}) {
   // Cabecera: título a la izquierda; lugar + fecha arriba a la derecha.
   const head = el('header', { class: 'post-head' });
   if (post.titulo) {
-    head.appendChild(el('h2', { class: 'post-titulo', text: post.titulo }));
+    const h2 = el('h2', { class: 'post-titulo' });
+    appendTextWithHashtags(h2, post.titulo);
+    head.appendChild(h2);
   }
   const meta = el('span', { class: 'post-meta' });
   if (post.location) {
@@ -106,7 +109,7 @@ export function renderPost(post, opts = {}) {
 
   if (post.text) {
     const body = el('div', { class: 'post-body' });
-    appendBodyWithHashtags(body, post.text);
+    appendTextWithHashtags(body, post.text);
     art.appendChild(body);
   }
   if (post.media?.length) {
