@@ -489,6 +489,14 @@ body.tag-tinted .hashtag-jordi {
   width: 44px; height: 44px; border: 1px solid var(--color-muted);
   border-radius: 4px; background: none; cursor: pointer; padding: 2px;
 }
+/* Selector + muestras de los colores originales debajo (visibles siempre,
+   también en navegadores que ignoran el datalist del input de color). */
+.jordi-color-wrap { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; }
+.jordi-swatches { display: flex; gap: 4px; }
+.jordi-swatch {
+  width: 12px; height: 12px; padding: 0;
+  border: 1px solid var(--color-muted); border-radius: 3px; cursor: pointer;
+}
 .jordi-row .texto-in { min-height: 3em; }
 .jordi-row .del { align-self: center; display: inline-flex; gap: 0.8em; }
 .add-jordi {

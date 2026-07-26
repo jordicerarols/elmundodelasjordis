@@ -57,6 +57,20 @@ function buildRow(jordi) {
   const color = el('input', { attrs: { type: 'color', list: PALETTE_ID } });
   color.value = isHexColor(jordi?.color) ? jordi.color : jordi ? DEFAULT_COLOR : randomPastel();
 
+  // Muestras de los colores originales EN la página, además del datalist:
+  // los navegadores viejos (Safari) ignoran el datalist y abren la rueda del
+  // sistema directamente, así que las ofrecemos como botones siempre visibles.
+  const colorWrap = el('span', { class: 'jordi-color-wrap' });
+  colorWrap.appendChild(color);
+  const swatches = el('span', { class: 'jordi-swatches' });
+  for (const c of ORIGINAL_COLORS) {
+    const sw = el('button', { class: 'jordi-swatch', attrs: { type: 'button', 'aria-label': `usar ${c}`, title: c } });
+    sw.style.backgroundColor = c;
+    sw.addEventListener('click', () => { color.value = c; });
+    swatches.appendChild(sw);
+  }
+  colorWrap.appendChild(swatches);
+
   const texto = el('textarea', { class: 'texto-in', attrs: { placeholder: 'contenido', maxlength: '4000' } });
   texto.value = jordi?.texto || '';
 
@@ -116,7 +130,7 @@ function buildRow(jordi) {
 
   row.appendChild(nombre);
   row.appendChild(subtitulo);
-  row.appendChild(color);
+  row.appendChild(colorWrap);
   row.appendChild(texto);
   row.appendChild(actions);
   return row;
