@@ -73,6 +73,12 @@ a { color: inherit; }
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
 }
+@media (prefers-reduced-motion: reduce) {
+  .h1-link:hover, .menu a:hover, .linky:hover, .hashtag:hover,
+  .h1-link:focus-visible, .menu a:focus-visible, .linky:focus-visible, .hashtag:focus-visible {
+    animation: none;
+  }
+}
 
 .linky {
   font-family: "Island Moments", cursive;
@@ -320,7 +326,9 @@ a { color: inherit; }
   font-size: var(--label-size);
   color: #fff;
   overflow-wrap: anywhere;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  /* Misma duración que el fondo del body (0.35s): círculo y página cambian
+     de color al unísono al activar/desactivar. */
+  transition: background-color 0.35s ease, color 0.35s ease;
 }
 .jordi-card.is-active .jordi-square {
   background-color: #fff !important;
@@ -338,11 +346,15 @@ a { color: inherit; }
 }
 
 /* El fondo de la página lo pinta el color de la jordi activa (inline style en
-   body). Suavizamos la transición. `.tag-tinted` es lo mismo en la home cuando
-   el filtro activo es un tag de jordi (#jordi, #jordy, …). */
-body.jordi-activa,
-body.tag-tinted {
+   body); en la home, `.tag-tinted` hace lo mismo con el tag de jordi activo.
+   La transición vive en body SIEMPRE (no bajo esas clases): al desactivar, la
+   clase y el color se quitan a la vez, y si la transición dependiera de la
+   clase el fondo volvería a blanco de golpe en vez de con degradado. */
+body {
   transition: background-color 0.35s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  body { transition: none; }
 }
 
 /* Un #hashtag que coincide con una jordi lleva su color (inline style). Lo
@@ -376,9 +388,12 @@ body.tag-tinted .hashtag-jordi {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.jordi-content.jordi-content-enter { animation: jordiContentEnter 0.3s ease both; }
+/* OJO: selector sin .jordi-content delante — el JS también re-dispara este
+   fade sobre el TITULAR (.jordis-title) al cambiar de jordi, y con el selector
+   compuesto el título no animaba nunca. */
+.jordi-content-enter { animation: jordiContentEnter 0.3s ease both; }
 @media (prefers-reduced-motion: reduce) {
-  .jordi-content.jordi-content-enter { animation: none; }
+  .jordi-content-enter { animation: none; }
 }
 
 /* ------------------------------ 5) FORMULARIOS --------------------------- */

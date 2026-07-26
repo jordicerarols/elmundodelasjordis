@@ -33,6 +33,8 @@ function deactivate() {
   document.body.style.removeProperty('background-color');
   for (const c of wrap.querySelectorAll('.jordi-card')) c.classList.remove('is-active');
   titleEl.textContent = SITE_TITLE;
+  // El titular vuelve con el mismo fade que al activar (simetría).
+  playEnter(titleEl, 'jordi-content-enter');
   contentEl.hidden = true;
   contentEl.replaceChildren();
 }
