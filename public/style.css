@@ -334,9 +334,16 @@ a { color: inherit; }
   background-color: #fff !important;
   color: var(--color-text);
 }
-/* Sin anillo de foco: el estado activo (círculo en blanco + fondo teñido) ya
-   es el feedback. Brave/Chromium pintaba el punteado incluso al hacer click. */
-.jordi-square:focus, .jordi-square:focus-visible { outline: none; }
+/* Sin anillo al hacer CLICK (Brave/Chromium pintaba el punteado), pero sí un
+   anillo sutil al navegar con teclado: sin él, quien tabula no sabe dónde está. */
+.jordi-square:focus { outline: none; }
+.jordi-square:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.4);
+  outline-offset: 4px;
+}
+/* Nombre en tinta oscura cuando el pastel es muy claro (amarillo, verdes
+   pálidos…): el blanco no se leía. La clase la pone el JS según luminancia. */
+.jordi-square-tinta { color: var(--color-text); }
 
 /* "casa" (y "editar las jordis" logueada) SIEMPRE al fondo, centrado. */
 .jordis-nav {
@@ -392,8 +399,15 @@ body.tag-tinted .hashtag-jordi {
    fade sobre el TITULAR (.jordis-title) al cambiar de jordi, y con el selector
    compuesto el título no animaba nunca. */
 .jordi-content-enter { animation: jordiContentEnter 0.3s ease both; }
+/* Salida simétrica al desactivar: el texto se va con el mismo fade con el que
+   entró (el JS oculta el nodo cuando termina). */
+@keyframes jordiContentExit {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(8px); }
+}
+.jordi-content-exit { animation: jordiContentExit 0.25s ease both; }
 @media (prefers-reduced-motion: reduce) {
-  .jordi-content-enter { animation: none; }
+  .jordi-content-enter, .jordi-content-exit { animation: none; }
 }
 
 /* ------------------------------ 5) FORMULARIOS --------------------------- */
@@ -492,6 +506,15 @@ body.tag-tinted .hashtag-jordi {
   border: none; background: rgba(0,0,0,0.6); color: #fff;
   cursor: pointer; line-height: 1; font-size: 14px;
 }
+/* Flechas ‹ › para reordenar miniaturas (el orden visual es el que se guarda). */
+.media-thumb .move {
+  position: absolute; top: 4px;
+  width: 22px; height: 22px; border-radius: 50%;
+  border: none; background: rgba(0,0,0,0.6); color: #fff;
+  cursor: pointer; line-height: 1; font-size: 15px;
+}
+.media-thumb .move-back { left: 4px; }
+.media-thumb .move-fwd { left: 30px; }
 
 /* --- editar las jordis: filas --- */
 .jordi-rows { display: flex; flex-direction: column; gap: clamp(18px, 3vw, 32px); }

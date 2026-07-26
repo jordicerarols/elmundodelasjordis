@@ -75,28 +75,8 @@ function buildRow(jordi) {
   texto.value = jordi?.texto || '';
 
   const actions = el('span', { class: 'del', style: '' });
-  const saveBtn = el('button', { class: 'linky', text: jordi ? 'guardar' : 'crear', attrs: { type: 'button' } });
-  actions.appendChild(saveBtn);
 
-  saveBtn.addEventListener('click', async () => {
-    const payload = { nombre: nombre.value.trim(), subtitulo: subtitulo.value.trim(), color: color.value, texto: texto.value };
-    if (!payload.nombre) { toast('pon un nombre', 'error'); return; }
-    saveBtn.disabled = true;
-    const id = row.dataset.id;
-    const res = id
-      ? await api(`/api/jordis/${id}`, { method: 'PATCH', body: payload })
-      : await api('/api/jordis', { method: 'POST', body: payload });
-    saveBtn.disabled = false;
-    if (!res.ok) { toast(res.data?.error || 'no se pudo guardar', 'error'); return; }
-    if (!id && res.data?.id) {
-      row.dataset.id = String(res.data.id);
-      saveBtn.textContent = 'guardar';
-      delBtn.hidden = false;
-    }
-    toast('guardado');
-  });
-
-  const delBtn = el('button', { class: 'linky', text: 'borrar', attrs: { type: 'button' } });
+  const delBtn = el('button', { class: 'linky del-btn', text: 'borrar', attrs: { type: 'button' } });
   delBtn.hidden = !jordi;
   delBtn.addEventListener('click', async () => {
     const id = row.dataset.id;
@@ -138,6 +118,45 @@ function buildRow(jordi) {
 
 addBtn.addEventListener('click', () => {
   rowsEl.appendChild(buildRow(null));
+});
+
+// Guardado GENERAL: un solo botón guarda todas las filas en orden (PATCH las
+// existentes, POST las nuevas con nombre; las nuevas sin nombre se ignoran) y
+// después persiste el orden. Sustituye a los "guardar" por fila.
+const saveAllBtn = $('#saveJordis');
+saveAllBtn.addEventListener('click', async () => {
+  saveAllBtn.disabled = true;
+  let saved = 0;
+  let failed = 0;
+  for (const row of [...rowsEl.children]) {
+    const payload = {
+      nombre: row.querySelector('.nombre-in').value.trim(),
+      subtitulo: row.querySelector('.subtitulo-in').value.trim(),
+      color: row.querySelector('input[type="color"]').value,
+      texto: row.querySelector('.texto-in').value,
+    };
+    const id = row.dataset.id;
+    if (!payload.nombre) {
+      if (id) { failed++; toast('hay una jordi sin nombre', 'error'); }
+      continue;
+    }
+    const res = id
+      ? await api(`/api/jordis/${id}`, { method: 'PATCH', body: payload })
+      : await api('/api/jordis', { method: 'POST', body: payload });
+    if (res.ok) {
+      saved++;
+      if (!id && res.data?.id) {
+        row.dataset.id = String(res.data.id);
+        row.querySelector('.del-btn').hidden = false;
+      }
+    } else {
+      failed++;
+      toast(res.data?.error || 'no se pudo guardar una jordi', 'error');
+    }
+  }
+  await saveOrder();
+  saveAllBtn.disabled = false;
+  if (!failed) toast(saved ? 'todo guardado' : 'nada que guardar');
 });
 
 (async function init() {

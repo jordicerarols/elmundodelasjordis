@@ -239,6 +239,18 @@ export async function attachMedia(
   );
 }
 
+// Reemplaza los adjuntos de un post por la lista dada (posición = orden de la
+// lista). Los objetos de R2 que salen NO se borran del bucket: mismo criterio
+// conservador que deletePost (recuperables, no hay papelera).
+export async function replaceMedia(
+  db: D1Database,
+  postId: number,
+  items: Parameters<typeof attachMedia>[2],
+) {
+  await db.prepare("DELETE FROM media WHERE post_id = ?").bind(postId).run();
+  await attachMedia(db, postId, items);
+}
+
 // Soft delete: marca deleted_at pero conserva los assets de R2 (recuperable).
 export async function deletePost(
   db: D1Database,

@@ -19,6 +19,7 @@ import {
   listJordis,
   listPosts,
   reorderJordis,
+  replaceMedia,
   updateJordi,
   updatePost,
 } from "./db";
@@ -292,7 +293,10 @@ app.patch("/api/posts/:id", requireAuth(), requireCsrf(), rateLimit((e) => e.WRI
   const existing = await getPost(c.env.DB, id);
   if (!existing) return c.json({ error: "no encontrado" }, 404);
 
-  const v = validatePostBody({ ...body, media: existing.media });
+  // Si el body trae `media`, es el estado final deseado (quitar/añadir/orden);
+  // si no lo trae, los adjuntos existentes se conservan tal cual.
+  const mediaProvided = Array.isArray(body.media);
+  const v = validatePostBody(mediaProvided ? body : { ...body, media: existing.media });
   if (!v.ok) return c.json({ error: v.error }, v.status);
 
   const updated = await updatePost(c.env.DB, id, {
@@ -301,6 +305,7 @@ app.patch("/api/posts/:id", requireAuth(), requireCsrf(), rateLimit((e) => e.WRI
     location: v.location,
   });
   if (!updated) return c.json({ error: "no encontrado" }, 404);
+  if (mediaProvided) await replaceMedia(c.env.DB, id, v.media);
   await setHashtags(c.env.DB, id, v.tags);
   const full = await getPost(c.env.DB, id);
   return c.json(full);
