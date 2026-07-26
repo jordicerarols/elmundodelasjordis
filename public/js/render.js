@@ -64,9 +64,13 @@ function renderMedia(media) {
       });
       wrap.appendChild(img);
     } else if (m.kind === 'video') {
+      // Sin poster, iOS/Safari no pinta el primer frame con preload=metadata y
+      // el vídeo se ve negro. El fragmento #t=0.001 fuerza un seek mínimo que
+      // hace que el navegador muestre el primer frame como "poster".
+      const src = m.thumb_key ? `/r2/${m.r2_key}` : `/r2/${m.r2_key}#t=0.001`;
       const v = el('video', {
         class: 'post-video',
-        attrs: { src: `/r2/${m.r2_key}`, controls: '', preload: 'metadata', playsinline: '' },
+        attrs: { src, controls: '', preload: 'metadata', playsinline: '' },
       });
       if (m.thumb_key) v.setAttribute('poster', `/r2/${m.thumb_key}`);
       wrap.appendChild(v);

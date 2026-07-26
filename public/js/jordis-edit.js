@@ -9,6 +9,40 @@ const addBtn = $('#addJordi');
 
 const DEFAULT_COLOR = '#7fd4ff';
 
+// Los 4 colores pastel del seed original (schema.sql, mantener en sync). Van a
+// un <datalist> compartido: el picker nativo los ofrece como muestras fijas,
+// así siempre se puede volver a un color original aunque se haya toqueteado.
+const ORIGINAL_COLORS = ['#7fd4ff', '#f9a8d4', '#86efac', '#fde047'];
+const PALETTE_ID = 'jordiPalette';
+
+function ensurePalette() {
+  if (document.getElementById(PALETTE_ID)) return;
+  const list = el('datalist', { attrs: { id: PALETTE_ID } });
+  for (const c of ORIGINAL_COLORS) list.appendChild(el('option', { attrs: { value: c } }));
+  document.body.appendChild(list);
+}
+
+// Pastel aleatorio para jordis nuevas: tono al azar, saturación/luminosidad
+// fijas en la misma familia que los originales (input[type=color] exige hex).
+function randomPastel() {
+  const h = Math.floor(Math.random() * 360);
+  const s = 0.85, l = 0.75;
+  const k = (n) => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = (n) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  const hex = (v) => Math.round(v * 255).toString(16).padStart(2, '0');
+  return `#${hex(f(0))}${hex(f(8))}${hex(f(4))}`;
+}
+
+// Persiste el orden actual de las filas YA guardadas (las nuevas sin id sólo
+// se mueven en el DOM; entran al orden cuando se crean).
+async function saveOrder() {
+  const ids = [...rowsEl.children].map((r) => Number(r.dataset.id)).filter(Boolean);
+  if (ids.length < 2) return;
+  const res = await api('/api/jordis/order', { method: 'PATCH', body: { ids } });
+  if (!res.ok) toast('no se pudo guardar el orden', 'error');
+}
+
 // Construye una fila. `jordi` null = fila nueva (crear).
 function buildRow(jordi) {
   const row = el('div', { class: 'jordi-row' });
@@ -20,8 +54,8 @@ function buildRow(jordi) {
   const subtitulo = el('input', { class: 'subtitulo-in', attrs: { type: 'text', placeholder: 'subtítulo', maxlength: '120' } });
   subtitulo.value = jordi?.subtitulo || '';
 
-  const color = el('input', { attrs: { type: 'color' } });
-  color.value = isHexColor(jordi?.color) ? jordi.color : DEFAULT_COLOR;
+  const color = el('input', { attrs: { type: 'color', list: PALETTE_ID } });
+  color.value = isHexColor(jordi?.color) ? jordi.color : jordi ? DEFAULT_COLOR : randomPastel();
 
   const texto = el('textarea', { class: 'texto-in', attrs: { placeholder: 'contenido', maxlength: '4000' } });
   texto.value = jordi?.texto || '';
@@ -61,6 +95,25 @@ function buildRow(jordi) {
   });
   actions.appendChild(delBtn);
 
+  // Reordenar con flechas: mueve la fila en el DOM y persiste el orden
+  // (el endpoint PATCH /api/jordis/order ya existía sin UI).
+  const upBtn = el('button', { class: 'linky', text: '↑', attrs: { type: 'button', 'aria-label': 'subir' } });
+  const downBtn = el('button', { class: 'linky', text: '↓', attrs: { type: 'button', 'aria-label': 'bajar' } });
+  upBtn.addEventListener('click', () => {
+    const prev = row.previousElementSibling;
+    if (!prev) return;
+    rowsEl.insertBefore(row, prev);
+    saveOrder();
+  });
+  downBtn.addEventListener('click', () => {
+    const next = row.nextElementSibling;
+    if (!next) return;
+    rowsEl.insertBefore(next, row);
+    saveOrder();
+  });
+  actions.appendChild(upBtn);
+  actions.appendChild(downBtn);
+
   row.appendChild(nombre);
   row.appendChild(subtitulo);
   row.appendChild(color);
@@ -74,6 +127,7 @@ addBtn.addEventListener('click', () => {
 });
 
 (async function init() {
+  ensurePalette();
   await checkAuth();
   const { ok, data } = await api('/api/jordis');
   rowsEl.replaceChildren();
