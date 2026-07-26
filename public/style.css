@@ -290,8 +290,11 @@ a { color: inherit; }
   text-align: center;
 }
 .jordis-squares {
-  display: flex;
-  flex-wrap: wrap;
+  /* Grid y no flex: con flex cada fila envuelta se centra por su cuenta y una
+     quinta jordi queda sola y centrada. Con grid, las filas comparten columnas
+     (la quinta cae DEBAJO de la primera) y justify-content centra el bloque. */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, clamp(140px, 18vw, 240px));
   justify-content: center;
   gap: clamp(20px, 4vw, 56px);
   /* Con margin-top auto aquí Y en .jordis-nav, el aire libre se reparte a
@@ -299,7 +302,7 @@ a { color: inherit; }
   margin-top: auto;
 }
 .jordi-card {
-  width: clamp(140px, 18vw, 240px);
+  width: 100%;
 }
 /* El círculo es el propio <button> y lleva el nombre dentro: blanco cuando
    está desactivada, negro cuando está activa (el círculo pasa a blanco sobre
